@@ -61,14 +61,14 @@ export default function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                className="hover:text-white transition"
+                className="transition-colors duration-300 hover:text-orange-500"
               >
                 {item.label}
               </a>
             ))}
             <a
               href="#contact"
-              className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-white/90 hover:bg-white/15 transition"
+              className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-white/90 hover:bg-white/15 hover:text-orange-500 transition-colors duration-300"
             >
               Get Quote
             </a>
@@ -124,7 +124,7 @@ export default function Header() {
                   onClick={handleMenuClose}
                   sx={{ "& a": { width: "100%" } }}
                 >
-                  <a href={item.href} className="w-full py-1.5">
+                  <a href={item.href} className="w-full py-1.5 hover:text-orange-500 transition-colors duration-300">
                     {item.label}
                   </a>
                 </MenuItem>
@@ -133,7 +133,7 @@ export default function Header() {
               <MenuItem onClick={handleMenuClose}>
                 <a
                   href="#contact"
-                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center"
+                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center hover:text-orange-500 transition-colors duration-300"
                 >
                   Get Quote
                 </a>
