@@ -35,14 +35,21 @@ export default function Header() {
       >
         {/* full-width row with 10px horizontal margin */}
         <div className="h-16 w-full flex items-center justify-between px-[10px]">
-          {/* Left: Logo */}
-          <a href="#" className="inline-flex items-center gap-2">
+          {/* Left: Logo + brand text */}
+          <a href="#" className="inline-flex items-center gap-3">
             <img
               src="/headerlogo.svg"
               alt="Chroma3D"
               className="h-9 sm:h-10 w-auto"
               draggable="false"
             />
+            <span
+              className="whitespace-nowrap leading-none text-[18px] sm:text-[20px]"
+              style={{ fontFamily: "'StardusterLasital', system-ui, sans-serif" }}
+            >
+              <span className="text-white">chroma</span>
+              <span className="text-orange-500">3D</span>
+            </span>
           </a>
 
           {/* Right: Nav (visible from sm and up) */}
