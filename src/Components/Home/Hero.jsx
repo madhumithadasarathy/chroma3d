@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import ModelViewer from "./ModelViewer.jsx";
 
 const leftVariants = {
   hidden: { opacity: 0, x: -40 },
@@ -37,7 +38,7 @@ export default function Hero() {
         style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <p className="uppercase tracking-[10px] text-sm text-orange-500/80 mb-2">
-          <span className="text-gray-100">Chroma</span>3D 
+          <span className="text-gray-100">Chroma</span>3D
         </p>
         <h1
           className="text-4xl sm:text-6xl leading-tight"
@@ -55,7 +56,7 @@ export default function Hero() {
         <div className="mt-7 flex gap-3">
           <a
             href="#services"
-            className="rounded-xl border border-orange-500/25  px-4 py-2 text-orange-500 hover:text-white hover:border-white transition"
+            className="rounded-xl border border-orange-500/25 px-4 py-2 text-orange-500 hover:text-white hover:border-white transition"
           >
             Explore Services
           </a>
@@ -68,8 +69,8 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* CENTER GAP (creates space between left & right) */}
-      <div className="hidden lg:block w-[100px]" />
+      {/* CENTER MODEL VIEWER */}
+      <ModelViewer />
 
       {/* RIGHT BLOCK */}
       <motion.div
@@ -82,7 +83,7 @@ export default function Hero() {
         "
         style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
-        <h2 className="text-xl sm:text-2xl  text-white/90">
+        <h2 className="text-xl sm:text-2xl text-white/90">
           Built for dreamers, designers, and doers.
         </h2>
         <p className="mt-3 text-white/70 max-w-md text-sm">
@@ -92,7 +93,7 @@ export default function Hero() {
         <div className="mt-6">
           <a
             href="#contact"
-            className="inline-block rounded-xl border border-white/15  px-4 py-2 text-white/90 hover:text-orange-500 hover:bg-white/15 transition"
+            className="inline-block rounded-xl border border-white/15 px-4 py-2 text-white/90 hover:text-orange-500 hover:bg-white/15 transition"
           >
             Get a Quote
           </a>
