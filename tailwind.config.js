@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+            fontFamily: {
+        poppins: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         base: {
           bg: "#0b0b0c",         // matte black
