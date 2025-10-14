@@ -44,8 +44,11 @@ export default function Header() {
               draggable="false"
             />
             <span
-              className="whitespace-nowrap leading-none text-[18px] sm:text-[20px]"
-              style={{ fontFamily: "'StardusterLasital', system-ui, sans-serif" }}
+              className="whitespace-nowrap leading-none text-[26px] sm:text-[30px]"
+              style={{
+                fontFamily: "'StardusterLasital', system-ui, sans-serif",
+                lineHeight: "1",
+              }}
             >
               <span className="text-white">chroma</span>
               <span className="text-orange-500">3D</span>
