@@ -2,24 +2,14 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,jsx}"
+    "./src/**/*.{js,jsx,ts,tsx}", // 👈 ensures Tailwind scans all your React files
   ],
   theme: {
     extend: {
-            fontFamily: {
+      fontFamily: {
         poppins: ['Poppins', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-      colors: {
-        base: {
-          bg: "#0b0b0c",         // matte black
-          card: "rgba(255,255,255,0.06)", // glass effect
-          edge: "rgba(255,255,255,0.12)",
-        }
-      },
-      backdropBlur: {
-        xs: '2px',
-      }
     },
   },
   plugins: [],
-}
+};
