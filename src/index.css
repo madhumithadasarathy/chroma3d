@@ -2,15 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global matte black and smooth fonts */
-:root {
-  color-scheme: dark;
-}
+/* global theme */
+:root { color-scheme: dark; }
 
-html, body, #root {
-  height: 100%;
-}
+html, body, #root { height: 100%; }
 
 body {
-  @apply bg-[color:var(--bg,theme(colors.base.bg))] text-white antialiased;
+  @apply text-white antialiased font-poppins;
+  /* center grey, vignette to black edges */
+  background:
+    radial-gradient(1200px 800px at 50% 40%, rgba(120,120,125,0.45), rgba(0,0,0,0.85) 65%),
+    radial-gradient(1600px 900px at 50% 50%, rgba(90,90,95,0.35), rgba(0,0,0,1) 70%);
+  background-color: #000; /* fallback */
 }
