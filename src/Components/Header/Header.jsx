@@ -29,7 +29,7 @@ export default function Header() {
         className="
           relative border-b border-white/10 bg-white/5 backdrop-blur-md
           after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0
-          after:h-[2px] after:bg-gradient-to-r
+          after:h-[1px] after:bg-gradient-to-r
           after:from-black after:via-orange-500 after:to-black
         "
       >
@@ -124,7 +124,10 @@ export default function Header() {
                   onClick={handleMenuClose}
                   sx={{ "& a": { width: "100%" } }}
                 >
-                  <a href={item.href} className="w-full py-1.5 hover:text-orange-500 transition-colors duration-300">
+                  <a
+                    href={item.href}
+                    className="w-full py-1.5 hover:text-orange-500 transition-colors duration-300"
+                  >
                     {item.label}
                   </a>
                 </MenuItem>
