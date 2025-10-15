@@ -23,6 +23,7 @@ export default function Hero() {
         flex flex-col lg:flex-row
         items-center justify-center
         px-8 sm:px-12 lg:px-20
+        gap-8 lg:gap-0           /* spacing when stacked on mobile */
         overflow-hidden
       "
     >
@@ -33,7 +34,8 @@ export default function Hero() {
         animate="show"
         className="
           flex-1 flex flex-col justify-center items-start text-left
-          mb-12 lg:mb-0
+          mt-4 lg:mt-0            /* small top margin on mobile */
+          mb-4 lg:mb-0
         "
         style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
@@ -80,6 +82,7 @@ export default function Hero() {
         className="
           flex-1 flex flex-col justify-center items-start lg:items-end
           text-left lg:text-right
+          mt-4 lg:mt-0            /* small top margin on mobile */
         "
         style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
