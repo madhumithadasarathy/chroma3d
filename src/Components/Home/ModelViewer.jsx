@@ -7,36 +7,20 @@ import {
   Environment,
   ContactShadows,
 } from "@react-three/drei";
-import { Suspense, useEffect, useMemo } from "react";
-import { MeshStandardMaterial } from "three";
+import { Suspense, useMemo } from "react";
+import { Color } from "three";
 
-function Sculpture({ bronze = true }) {
-  const { scene } = useGLTF("/sculpture.glb"); // in /public
+function Sculpture() {
+  // Load gazebo.glb from /public
+  const { scene } = useGLTF("/gazebo.glb");
   const clone = useMemo(() => scene.clone(), [scene]);
 
-  useEffect(() => {
-    if (!bronze) return;
-    const bronzeMat = new MeshStandardMaterial({
-      color: "#cd7f32", // bronze
-      metalness: 1.0,
-      roughness: 0.35,
-    });
-    clone.traverse((o) => {
-      if (o.isMesh) {
-        o.material = bronzeMat;
-        o.castShadow = true;
-        o.receiveShadow = true;
-      }
-    });
-  }, [bronze, clone]);
-
-  // Slightly smaller model
-  return <primitive object={clone} scale={1.0} position={[0, -0.15, 0]} />;
+  // Keep model’s original materials/colors, just scale up slightly
+  return <primitive object={clone} scale={1.2} position={[0, -0.15, 0]} />;
 }
 
 export default function ModelViewer() {
   return (
-    // Reduced viewport height to balance layout
     <div className="hidden lg:flex items-center justify-center w-[420px] h-[480px] xl:w-[460px] xl:h-[520px]">
       <Canvas
         camera={{ fov: 35 }}
@@ -45,16 +29,31 @@ export default function ModelViewer() {
         style={{ background: "transparent" }}
         shadows
       >
-        {/* Studio lighting for consistent reflections */}
+        {/* Studio lighting for neutral base reflections */}
         <Environment preset="studio" intensity={1} />
+
+        {/* Key light to highlight shape */}
         <directionalLight position={[4, 6, 3]} intensity={0.6} castShadow />
+
+        {/* 🔶 Orange brand accent lighting */}
+        <pointLight
+          position={[0, -2, 0]} // from below
+          intensity={1.2}
+          distance={10}
+          color={new Color("#ff7a1a")}
+        />
+        <pointLight
+          position={[2.5, 0.5, 2]} // warm side glow
+          intensity={0.4}
+          color={new Color("#ff7a1a")}
+        />
 
         <Suspense fallback={null}>
           <Bounds fit clip observe margin={0.9}>
-            <Sculpture bronze />
+            <Sculpture />
           </Bounds>
 
-          {/* Soft ground shadow */}
+          {/* Soft shadow on ground */}
           <ContactShadows
             opacity={0.35}
             scale={10}
@@ -63,7 +62,7 @@ export default function ModelViewer() {
             resolution={1024}
           />
 
-          {/* Horizontal-only rotation */}
+          {/* Horizontal-only gentle rotation */}
           <OrbitControls
             makeDefault
             enablePan={false}
@@ -79,4 +78,5 @@ export default function ModelViewer() {
   );
 }
 
-useGLTF.preload("/sculpture.glb");
+// Preload model for faster load
+useGLTF.preload("/gazebo.glb");
