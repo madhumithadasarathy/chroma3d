@@ -79,4 +79,4 @@ export default function ModelViewer() {
   );
 }
 
-useGLTF.preload("/sculpture.glb");
+useGLTF.preload("/Zeus.glb");
