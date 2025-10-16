@@ -1,5 +1,7 @@
+// src/App.jsx
 import Header from "./Components/Header/Header.jsx";
 import Hero from "./Components/Home/Hero.jsx";
+import WhyUs from "./Components/Home/WhyUs.jsx"; // <-- add this
 
 export default function App() {
   return (
@@ -11,7 +13,10 @@ export default function App() {
         <Hero />
       </section>
 
-      
+      {/* Why Us */}
+      <section id="why-us" className="scroll-mt-20">
+        <WhyUs />
+      </section>
     </main>
   );
 }
