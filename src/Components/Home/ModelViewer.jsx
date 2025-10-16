@@ -12,7 +12,7 @@ import { Suspense, useEffect, useMemo, useRef } from "react";
 import { MeshStandardMaterial } from "three";
 
 function Sculpture({ bronze = true }) {
-  const { scene } = useGLTF("/natraj.glb"); // model in /public
+  const { scene } = useGLTF("/ganesha.glb"); // model in /public
   const clone = useMemo(() => scene.clone(), [scene]);
 
   useEffect(() => {
@@ -142,4 +142,4 @@ export default function ModelViewer() {
   );
 }
 
-useGLTF.preload("/natraj.glb");
+useGLTF.preload("/ganesha.glb");
