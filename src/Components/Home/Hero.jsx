@@ -29,7 +29,7 @@ export default function Hero() {
         text-white
         bg-[#0a0a0b]
       "
-      style={{ transform: "translateZ(0)" }}
+      style={{ transform: 'translateZ(0)' }}
     >
       {/* === BACKGROUND (push behind with -z-10) === */}
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
@@ -51,7 +51,7 @@ export default function Hero() {
           h-full
           relative z-10
         "
-        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
+        style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <p className="uppercase tracking-[8px] text-xs sm:text-sm text-orange-500/80 mb-1 sm:mb-2">
@@ -90,9 +90,9 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* === CENTER MODEL VIEWER === */}
-      <div className="my-2 sm:my-3 lg:my-0 flex justify-center relative z-10">
-        {/* Dark vignette + focused glow (stays inside this container) */}
+      {/* === CENTER MODEL VIEWER (vertically centered) === */}
+      <div className="flex flex-1 items-center justify-center relative z-10 min-h-[60vh] lg:min-h-full">
+        {/* Dark vignette + focused glow */}
         <div
           aria-hidden
           className="
@@ -121,7 +121,7 @@ export default function Hero() {
         />
 
         {/* Actual model on top */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex items-center justify-center">
           <ModelViewer />
         </div>
       </div>
@@ -137,7 +137,7 @@ export default function Hero() {
           h-full
           relative z-10
         "
-        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
+        style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <h2 className="text-lg sm:text-xl text-white/90">
