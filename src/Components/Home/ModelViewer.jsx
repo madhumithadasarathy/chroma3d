@@ -38,7 +38,8 @@ function Sculpture({ bronze = true }) {
   }, [bronze, clone]);
 
   // centered horizontally; slight down offset
-  return <primitive object={clone} scale={1.15} position={[0, -0.15, 0]} />;
+  return <primitive object={clone} scale={1.35} position={[0, -0.15, 0]} />;
+  // ↑ increased from 1.25 → 1.35 for a gentle size boost
 }
 
 export default function ModelViewer() {
@@ -57,11 +58,11 @@ export default function ModelViewer() {
       <div
         className="
           flex items-center justify-center
-          w-[200px] h-[220px]           /* phones */
-          sm:w-[260px] sm:h-[280px]     /* small tablets */
-          md:w-[320px] md:h-[340px]     /* tablets */
-          lg:w-[420px] lg:h-[480px]     /* laptops/desktops */
-          xl:w-[460px] xl:h-[520px]
+          w-[240px] h-[260px]           /* phones */
+          sm:w-[300px] sm:h-[320px]     /* small tablets */
+          md:w-[360px] md:h-[380px]     /* tablets */
+          lg:w-[460px] lg:h-[520px]     /* laptops/desktops */
+          xl:w-[500px] xl:h-[560px]
         "
       >
         <Canvas
@@ -76,8 +77,8 @@ export default function ModelViewer() {
 
           <Suspense fallback={null}>
             <Center>
-              {/* tighter margin so the larger scale still fits without cropping */}
-              <Bounds fit clip observe margin={1.08}>
+              {/* Slightly reduced margin so model fits perfectly even when scaled up */}
+              <Bounds fit clip observe margin={1.05}>
                 <Sculpture bronze />
               </Bounds>
             </Center>
@@ -95,7 +96,7 @@ export default function ModelViewer() {
               makeDefault
               enablePan={false}
               enableZoom={false}
-              autoRotate={false}          /* no full spin; starts centered */
+              autoRotate={false} /* no full spin; starts centered */
               enableDamping
               dampingFactor={0.08}
               /* lock vertical tilt */
@@ -103,7 +104,7 @@ export default function ModelViewer() {
               maxPolarAngle={Math.PI / 2}
               /* limit left/right sweep around center (~±18°) */
               minAzimuthAngle={-Math.PI / 10}
-              maxAzimuthAngle={ Math.PI / 10}
+              maxAzimuthAngle={Math.PI / 10}
               target={[0, 0, 0]}
             />
           </Suspense>

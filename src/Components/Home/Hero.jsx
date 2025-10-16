@@ -33,10 +33,8 @@ export default function Hero() {
     >
       {/* === BACKGROUND (push behind with -z-10) === */}
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-
       {/* Localized circular grey light only around model */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(25%_25%_at_50%_55%,rgba(40,40,40,0.6)_0%,rgba(10,10,11,1)_80%)]" />
-
       {/* Ambient orange accents */}
       <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
       <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
@@ -92,9 +90,9 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* === CENTER MODEL VIEWER (slightly larger) === */}
+      {/* === CENTER MODEL VIEWER === */}
       <div className="my-2 sm:my-3 lg:my-0 flex justify-center relative z-10">
-        {/* Dark vignette + focused glow */}
+        {/* Dark vignette + focused glow (stays inside this container) */}
         <div
           aria-hidden
           className="
@@ -104,8 +102,7 @@ export default function Hero() {
         >
           <div
             className="
-              h-80 w-80 sm:h-[22rem] sm:w-[22rem]
-              rounded-full
+              h-72 w-72 rounded-full
               bg-[radial-gradient(circle,rgba(50,50,50,0.7)_0%,rgba(0,0,0,1)_85%)]
               blur-2xl
               -z-10
@@ -118,13 +115,13 @@ export default function Hero() {
           aria-hidden
           className="
             pointer-events-none absolute left-1/2 bottom-[-6px] z-0
-            h-12 w-60 -translate-x-1/2
+            h-12 w-56 -translate-x-1/2
             rounded-full bg-orange-500/22 blur-2xl
           "
         />
 
         {/* Actual model on top */}
-        <div className="relative z-10 scale-[1.15] sm:scale-[1.2] md:scale-[1.25]">
+        <div className="relative z-10">
           <ModelViewer />
         </div>
       </div>
