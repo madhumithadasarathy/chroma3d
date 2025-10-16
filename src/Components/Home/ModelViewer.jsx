@@ -16,7 +16,7 @@ function Sculpture({ bronze = true }) {
   const clone = useMemo(() => scene.clone(), [scene]);
 
   useEffect(() => {
-    // ensure shadows
+    // ensure shadows on all meshes
     clone.traverse((o) => {
       if (o.isMesh) {
         o.castShadow = true;
@@ -24,7 +24,7 @@ function Sculpture({ bronze = true }) {
       }
     });
 
-    // bronze override (optional)
+    // optional bronze override
     if (bronze) {
       const bronzeMat = new MeshStandardMaterial({
         color: "#cd7f32",
@@ -37,14 +37,14 @@ function Sculpture({ bronze = true }) {
     }
   }, [bronze, clone]);
 
-  // 🟠 Slightly enlarged model and centered
-  return <primitive object={clone} scale={1.25} position={[0, -0.15, 0]} />;
+  // centered horizontally; slight down offset
+  return <primitive object={clone} scale={1.15} position={[0, -0.15, 0]} />;
 }
 
 export default function ModelViewer() {
   const controlsRef = useRef(null);
 
-  // force initial azimuth to center (0) on mount
+  // start centered (no left/right offset)
   useEffect(() => {
     if (!controlsRef.current) return;
     controlsRef.current.setAzimuthalAngle(0);
@@ -55,11 +55,11 @@ export default function ModelViewer() {
     <div
       className="
         flex items-center justify-center
-        w-[260px] h-[280px]
-        sm:w-[320px] sm:h-[340px]
-        md:w-[380px] md:h-[420px]
-        lg:w-[460px] lg:h-[520px]
-        xl:w-[520px] xl:h-[580px]
+        w-[200px] h-[220px]           /* phones */
+        sm:w-[260px] sm:h-[280px]     /* small tablets */
+        md:w-[320px] md:h-[340px]     /* tablets */
+        lg:w-[420px] lg:h-[480px]     /* laptops/desktops */
+        xl:w-[460px] xl:h-[520px]
       "
     >
       <Canvas
@@ -74,7 +74,8 @@ export default function ModelViewer() {
 
         <Suspense fallback={null}>
           <Center>
-            <Bounds fit clip observe margin={1.05}>
+            {/* tighter margin so the larger scale still fits without cropping */}
+            <Bounds fit clip observe margin={1.08}>
               <Sculpture bronze />
             </Bounds>
           </Center>
@@ -92,13 +93,15 @@ export default function ModelViewer() {
             makeDefault
             enablePan={false}
             enableZoom={false}
-            autoRotate={false}
+            autoRotate={false}          /* no full spin; starts centered */
             enableDamping
             dampingFactor={0.08}
+            /* lock vertical tilt */
             minPolarAngle={Math.PI / 2}
             maxPolarAngle={Math.PI / 2}
-            minAzimuthAngle={-Math.PI / 10}  // restrict slight left
-            maxAzimuthAngle={Math.PI / 10}   // restrict slight right
+            /* limit left/right sweep around center (~±18°) */
+            minAzimuthAngle={-Math.PI / 10}
+            maxAzimuthAngle={ Math.PI / 10}
             target={[0, 0, 0]}
           />
         </Suspense>
