@@ -102,7 +102,7 @@ export default function Hero() {
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <h2 className="text-lg sm:text-xl text-white/90">
-            Built for dreamers, designers, and doers.
+            Built for <span className="text-orange-500 font-semibold">dreamers, designers, and doers.</span>
           </h2>
 
           <p className="mt-2 sm:mt-3 text-white/70 max-w-md text-xs sm:text-sm leading-relaxed">
