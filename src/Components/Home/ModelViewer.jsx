@@ -24,7 +24,7 @@ function Sculpture({ bronze = true }) {
       }
     });
 
-    // optional bronze override (kept from your version)
+    // bronze override (optional)
     if (bronze) {
       const bronzeMat = new MeshStandardMaterial({
         color: "#cd7f32",
@@ -37,8 +37,8 @@ function Sculpture({ bronze = true }) {
     }
   }, [bronze, clone]);
 
-  // center the model horizontally (x=0) so initial view is centered
-  return <primitive object={clone} scale={1.0} position={[0, -0.15, 0]} />;
+  // 🟠 Slightly enlarged model and centered
+  return <primitive object={clone} scale={1.25} position={[0, -0.15, 0]} />;
 }
 
 export default function ModelViewer() {
@@ -55,11 +55,11 @@ export default function ModelViewer() {
     <div
       className="
         flex items-center justify-center
-        w-[240px] h-[260px]
-        sm:w-[300px] sm:h-[320px]
-        md:w-[340px] md:h-[380px]
-        lg:w-[420px] lg:h-[480px]
-        xl:w-[460px] xl:h-[520px]
+        w-[260px] h-[280px]
+        sm:w-[320px] sm:h-[340px]
+        md:w-[380px] md:h-[420px]
+        lg:w-[460px] lg:h-[520px]
+        xl:w-[520px] xl:h-[580px]
       "
     >
       <Canvas
@@ -74,7 +74,7 @@ export default function ModelViewer() {
 
         <Suspense fallback={null}>
           <Center>
-            <Bounds fit clip observe margin={1.1}>
+            <Bounds fit clip observe margin={1.05}>
               <Sculpture bronze />
             </Bounds>
           </Center>
@@ -92,15 +92,13 @@ export default function ModelViewer() {
             makeDefault
             enablePan={false}
             enableZoom={false}
-            autoRotate={false}            // start centered; no full spin
+            autoRotate={false}
             enableDamping
             dampingFactor={0.08}
-            // lock vertical tilt
             minPolarAngle={Math.PI / 2}
             maxPolarAngle={Math.PI / 2}
-            // limit left/right sweep around center
-            minAzimuthAngle={-Math.PI / 10}   // ~ -18°
-            maxAzimuthAngle={ Math.PI / 10}   // ~ +18°
+            minAzimuthAngle={-Math.PI / 10}  // restrict slight left
+            maxAzimuthAngle={Math.PI / 10}   // restrict slight right
             target={[0, 0, 0]}
           />
         </Suspense>
