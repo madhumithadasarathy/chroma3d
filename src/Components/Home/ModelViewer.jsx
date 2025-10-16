@@ -13,7 +13,7 @@ import { MeshStandardMaterial } from "three";
 
 function Sculpture({ bronze = true }) {
   const { scene } = useGLTF("/ganesha.glb"); // model in /public
-  const clone = useMemo(() => scene.clone(), [scene]);
+  const clone = useMemo(() => scene.clone(true), [scene]);
 
   useEffect(() => {
     // ensure shadows on all meshes
@@ -24,7 +24,6 @@ function Sculpture({ bronze = true }) {
       }
     });
 
-    // optional bronze override
     if (bronze) {
       const bronzeMat = new MeshStandardMaterial({
         color: "#cd7f32",
@@ -39,16 +38,16 @@ function Sculpture({ bronze = true }) {
 
   // centered horizontally; slight down offset
   return <primitive object={clone} scale={1.35} position={[0, -0.15, 0]} />;
-  // ↑ increased from 1.25 → 1.35 for a gentle size boost
 }
 
 export default function ModelViewer() {
   const controlsRef = useRef(null);
 
-  // start centered (no left/right offset)
   useEffect(() => {
     if (!controlsRef.current) return;
+    // start slightly top-down and centered
     controlsRef.current.setAzimuthalAngle(0);
+    controlsRef.current.setPolarAngle(Math.PI / 2.5); // ~72°, a gentle tilt
     controlsRef.current.update();
   }, []);
 
@@ -57,7 +56,7 @@ export default function ModelViewer() {
       {/* Canvas wrapper with responsive sizing */}
       <div
         className="
-          flex items-center justify-center
+          relative flex items-center justify-center
           w-[240px] h-[260px]           /* phones */
           sm:w-[300px] sm:h-[320px]     /* small tablets */
           md:w-[360px] md:h-[380px]     /* tablets */
@@ -66,18 +65,27 @@ export default function ModelViewer() {
         "
       >
         <Canvas
-          camera={{ fov: 30 }}
+          camera={{ fov: 30, position: [0, 0.6, 3] }} // clear, flattering angle
           dpr={[1, 2]}
           gl={{ antialias: true, alpha: true }}
           style={{ background: "transparent" }}
           shadows
         >
-          <Environment preset="studio" intensity={1} />
-          <directionalLight position={[4, 6, 3]} intensity={0.6} castShadow />
+          {/* Lighting: soft fill + environment + key */}
+          <ambientLight intensity={0.55} />
+          <hemisphereLight intensity={0.35} groundColor="#1a1a1a" />
+          <directionalLight
+            position={[4, 6, 3]}
+            intensity={0.6}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+          />
+          <Environment preset="studio" intensity={0.7} />
 
           <Suspense fallback={null}>
             <Center>
-              {/* Slightly reduced margin so model fits perfectly even when scaled up */}
+              {/* Bounds frames the object nicely regardless of scale */}
               <Bounds fit clip observe margin={1.05}>
                 <Sculpture bronze />
               </Bounds>
@@ -96,16 +104,16 @@ export default function ModelViewer() {
               makeDefault
               enablePan={false}
               enableZoom={false}
-              autoRotate={false} /* no full spin; starts centered */
+              autoRotate={false}
               enableDamping
               dampingFactor={0.08}
-              /* lock vertical tilt */
-              minPolarAngle={Math.PI / 2}
-              maxPolarAngle={Math.PI / 2}
-              /* limit left/right sweep around center (~±18°) */
+              // allow a little vertical play (top-down-ish only)
+              minPolarAngle={Math.PI / 2.8} // ~64°
+              maxPolarAngle={Math.PI / 2.2} // ~82°
+              // limit left/right sweep around center (~±18°)
               minAzimuthAngle={-Math.PI / 10}
               maxAzimuthAngle={Math.PI / 10}
-              target={[0, 0, 0]}
+              target={[0, 0.1, 0]} // nudge up a little so face/torso center nicely
             />
           </Suspense>
         </Canvas>

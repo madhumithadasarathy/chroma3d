@@ -31,7 +31,7 @@ export default function Hero() {
       "
       style={{ transform: 'translateZ(0)' }}
     >
-      {/* === BACKGROUND (push behind with -z-10) === */}
+      {/* === BACKGROUND (consistent with Vision & WhyUs) === */}
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(25%_25%_at_50%_55%,rgba(40,40,40,0.6)_0%,rgba(10,10,11,1)_80%)]" />
       <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
@@ -88,38 +88,37 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* === CENTER MODEL VIEWER (slightly moved upward) === */}
-      <div className="flex flex-1 items-center justify-center relative z-10 min-h-[60vh] lg:min-h-full -translate-y-6">
-        {/* Dark vignette + focused glow */}
+      {/* === CENTER MODEL VIEWER (visible and clear) === */}
+      <div className="flex flex-1 items-center justify-center relative z-[20] min-h-[60vh] lg:min-h-full">
+        {/* Soft neutral halo behind model */}
         <div
           aria-hidden
           className="
-            pointer-events-none absolute inset-0 z-0
+            pointer-events-none absolute inset-0 -z-10
             flex items-center justify-center
           "
         >
           <div
             className="
-              h-72 w-72 rounded-full
-              bg-[radial-gradient(circle,rgba(50,50,50,0.7)_0%,rgba(0,0,0,1)_85%)]
+              h-80 w-80 rounded-full
+              bg-[radial-gradient(circle,rgba(200,200,210,0.08)_0%,rgba(0,0,0,0)_70%)]
               blur-2xl
-              -z-10
             "
           />
         </div>
 
-        {/* Orange base glow merging into Vision */}
+        {/* Orange base glow to merge with Vision */}
         <div
           aria-hidden
           className="
-            pointer-events-none absolute left-1/2 bottom-[-6px] z-0
+            pointer-events-none absolute left-1/2 bottom-[-6px] -z-10
             h-12 w-56 -translate-x-1/2
-            rounded-full bg-orange-500/22 blur-2xl
+            rounded-full bg-orange-500/18 blur-2xl
           "
         />
 
-        {/* Actual model on top */}
-        <div className="relative z-10 flex items-center justify-center">
+        {/* Actual model */}
+        <div className="relative z-[30] flex items-center justify-center">
           <ModelViewer />
         </div>
       </div>
