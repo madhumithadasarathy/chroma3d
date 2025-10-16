@@ -33,9 +33,7 @@ export default function Hero() {
     >
       {/* === BACKGROUND (push behind with -z-10) === */}
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-      {/* Localized circular grey light only around model */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(25%_25%_at_50%_55%,rgba(40,40,40,0.6)_0%,rgba(10,10,11,1)_80%)]" />
-      {/* Ambient orange accents */}
       <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
       <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
 
@@ -90,8 +88,8 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* === CENTER MODEL VIEWER (vertically centered) === */}
-      <div className="flex flex-1 items-center justify-center relative z-10 min-h-[60vh] lg:min-h-full">
+      {/* === CENTER MODEL VIEWER (slightly moved upward) === */}
+      <div className="flex flex-1 items-center justify-center relative z-10 min-h-[60vh] lg:min-h-full -translate-y-6">
         {/* Dark vignette + focused glow */}
         <div
           aria-hidden
