@@ -25,9 +25,21 @@ export default function Hero() {
         px-6 sm:px-10 lg:px-20
         overflow-hidden
         gap-4 sm:gap-6 lg:gap-0
+        will-change-transform
+        text-white
+        bg-[#0a0a0b]
       "
+      style={{ transform: "translateZ(0)" }}
     >
-      {/* LEFT BLOCK */}
+      {/* === BACKGROUND (push behind with -z-10) === */}
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
+      {/* Localized circular grey light only around model */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(25%_25%_at_50%_55%,rgba(40,40,40,0.6)_0%,rgba(10,10,11,1)_80%)]" />
+      {/* Ambient orange accents */}
+      <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+      <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+
+      {/* === LEFT CONTENT === */}
       <motion.div
         variants={leftVariants}
         initial="hidden"
@@ -37,10 +49,9 @@ export default function Hero() {
           items-start text-left
           lg:mb-0
           h-full
+          relative z-10
         "
-        style={{
-          fontFamily: "Poppins, system-ui, sans-serif",
-        }}
+        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <p className="uppercase tracking-[8px] text-xs sm:text-sm text-orange-500/80 mb-1 sm:mb-2">
@@ -49,9 +60,7 @@ export default function Hero() {
 
           <h1
             className="text-3xl sm:text-5xl leading-snug sm:leading-tight"
-            style={{
-              fontFamily: "'StardusterLasital', system-ui, sans-serif",
-            }}
+            style={{ fontFamily: "'StardusterLasital', system-ui, sans-serif" }}
           >
             where&nbsp;<span className="text-orange-500">ideas</span>
             <br />
@@ -59,9 +68,9 @@ export default function Hero() {
           </h1>
 
           <p className="mt-3 sm:mt-4 text-white/80 max-w-md text-xs sm:text-sm">
-            Turning imagination into precision-crafted reality.
-            From rapid prototypes to showpiece products, we bring your concepts
-            to life — layer by layer — with the perfect blend of art and engineering.
+            Turning imagination into precision-crafted reality. From rapid
+            prototypes to showpiece products, we bring your concepts to life —
+            layer by layer — with the perfect blend of art and engineering.
           </p>
 
           <div className="mt-5 sm:mt-6 flex gap-2 sm:gap-3">
@@ -81,12 +90,43 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* CENTER MODEL VIEWER */}
-      <div className="my-2 sm:my-3 lg:my-0 flex justify-center">
-        <ModelViewer />
+      {/* === CENTER MODEL VIEWER === */}
+      <div className="my-2 sm:my-3 lg:my-0 flex justify-center relative z-10">
+        {/* Dark vignette + focused glow (stays inside this container) */}
+        <div
+          aria-hidden
+          className="
+            pointer-events-none absolute inset-0 z-0
+            flex items-center justify-center
+          "
+        >
+          <div
+            className="
+              h-72 w-72 rounded-full
+              bg-[radial-gradient(circle,rgba(50,50,50,0.7)_0%,rgba(0,0,0,1)_85%)]
+              blur-2xl
+              -z-10
+            "
+          />
+        </div>
+
+        {/* Orange base glow merging into Vision */}
+        <div
+          aria-hidden
+          className="
+            pointer-events-none absolute left-1/2 bottom-[-6px] z-0
+            h-12 w-56 -translate-x-1/2
+            rounded-full bg-orange-500/22 blur-2xl
+          "
+        />
+
+        {/* Actual model on top */}
+        <div className="relative z-10">
+          <ModelViewer />
+        </div>
       </div>
 
-      {/* RIGHT BLOCK */}
+      {/* === RIGHT CONTENT === */}
       <motion.div
         variants={rightVariants}
         initial="hidden"
@@ -95,14 +135,16 @@ export default function Hero() {
           flex-1 flex flex-col justify-center
           items-start lg:items-end text-left lg:text-right
           h-full
+          relative z-10
         "
-        style={{
-          fontFamily: "Poppins, system-ui, sans-serif",
-        }}
+        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <h2 className="text-lg sm:text-xl text-white/90">
-            Built for <span className="text-orange-500 font-semibold">dreamers, designers, and doers.</span>
+            Built for{" "}
+            <span className="text-orange-500 font-semibold">
+              dreamers, designers, and doers.
+            </span>
           </h2>
 
           <p className="mt-2 sm:mt-3 text-white/70 max-w-md text-xs sm:text-sm leading-relaxed">

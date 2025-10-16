@@ -11,14 +11,13 @@ export default function Home() {
         <Hero />
       </section>
 
-      {/* Why Us */}
-
-      {/* Vision & Mission */}
-      <section id="vision" className="scroll-mt-20">
+      {/* Vision & Mission — tiny overlap to avoid any seam */}
+      <section id="vision" className="scroll-mt-20 -mt-[2px]">
         <Vision />
       </section>
 
-      <section id="why-us" className="scroll-mt-20">
+      {/* Why Us */}
+      <section id="why-us" className="scroll-mt-20 -mt-[2px]">
         <WhyUs />
       </section>
     </main>

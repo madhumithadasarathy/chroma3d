@@ -20,21 +20,27 @@ export default function Vision() {
 
   return (
     <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-[#0a0a0b] text-neutral-200">
-      {/* Subtle grain + glow */}
+      {/* === BACKGROUND (Top orange glow removed) === */}
+      {/* Subtle grain only */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_0%,rgba(249,115,22,0.08),transparent_60%)]" />
+      {/* ⛔ Removed the orange radial glow that caused top light */}
+      {/* <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_0%,rgba(249,115,22,0.08),transparent_60%)]" /> */}
 
       {/* Header */}
       <div className="absolute top-10 w-full px-6 text-center">
-        <div className="mb-2 inline-flex items-center gap-3 text-[11px] tracking-[0.3em] text-orange-500/80">
+        <div className="mb-2 inline-flex items-center gap-3 text-[15px] tracking-[0.3em] text-orange-500/80">
           <span className="h-[1px] w-8 bg-orange-500/60" /> VISION • MISSION{" "}
           <span className="h-[1px] w-8 bg-orange-500/60" />
         </div>
-        <h2 className="text-4xl font-semibold text-white md:text-5xl">
-          Hologram Pillar
+        <h2
+          className="text-4xl font-semibold md:text-5xl text-white"
+          style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
+        >
+          Imagination meets{" "}
+          <span className="text-orange-500">Engineering</span>
         </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-sm text-neutral-400 md:text-base">
-          A cinematic reveal of who we are — engineered light, living motion.
+        <p className="mx-auto mt-2 max-w-2xl text-sm text-white md:text-base">
+          Defining the intersection of imagination, technology, and precision.
         </p>
       </div>
 
@@ -145,7 +151,7 @@ export default function Vision() {
         </AnimatePresence>
       </div>
 
-      {/* Ambient glow */}
+      {/* Ambient side glows (keep) */}
       <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl" />
     </section>
