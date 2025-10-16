@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { IconButton, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { motion } from "framer-motion";
 
 const NAV = [
-  { href: "#services", label: "Services" },
-  { href: "#products", label: "Products" },
-  { href: "#contact", label: "Contact" },
+  { to: "/services", label: "Services" },
+  { to: "/products", label: "Products" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export default function Header() {
@@ -19,10 +20,10 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* thin top divider */}
-      <div className="h-px w-full bg-white/10"></div>
+      {/* Thin top divider */}
+      <div className="h-px w-full bg-white/10" />
 
-      {/* glass bar with black→orange→black gradient line at bottom */}
+      {/* Glassy nav bar with gradient underline */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -33,10 +34,9 @@ export default function Header() {
           after:from-black after:via-orange-500 after:to-black
         "
       >
-        {/* full-width row with 10px horizontal margin */}
         <div className="h-16 w-full flex items-center justify-between px-[10px]">
-          {/* Left: Logo + brand text */}
-          <a href="#" className="inline-flex items-center gap-3">
+          {/* Logo + brand */}
+          <NavLink to="/" className="inline-flex items-center gap-3">
             <img
               src="/headerlogo.svg"
               alt="Chroma3D"
@@ -53,28 +53,39 @@ export default function Header() {
               <span className="text-white">chroma</span>
               <span className="text-orange-500">3D</span>
             </span>
-          </a>
+          </NavLink>
 
-          {/* Right: Nav (visible from sm and up) */}
+          {/* Desktop Nav */}
           <nav className="hidden sm:flex items-center gap-8 text-sm text-white/80">
             {NAV.map((item) => (
-              <a
+              <NavLink
                 key={item.label}
-                href={item.href}
-                className="transition-colors duration-300 hover:text-orange-500"
+                to={item.to}
+                className={({ isActive }) =>
+                  `transition-colors duration-300 ${
+                    isActive ? "text-orange-500" : "hover:text-orange-500"
+                  }`
+                }
               >
                 {item.label}
-              </a>
+              </NavLink>
             ))}
-            <a
-              href="#contact"
-              className="rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-white/90 hover:bg-white/15 hover:text-orange-500 transition-colors duration-300"
+
+            <NavLink
+              to="/get-quote"
+              className={({ isActive }) =>
+                `rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-white/90 transition-colors duration-300 ${
+                  isActive
+                    ? "text-orange-500"
+                    : "hover:text-orange-500 hover:bg-white/15"
+                }`
+              }
             >
               Get Quote
-            </a>
+            </NavLink>
           </nav>
 
-          {/* Phone: hamburger only (< sm) */}
+          {/* Mobile Nav (hamburger) */}
           <div className="sm:hidden">
             <IconButton
               aria-label="Open menu"
@@ -119,27 +130,23 @@ export default function Header() {
               </MenuItem>
 
               {NAV.map((item) => (
-                <MenuItem
-                  key={item.label}
-                  onClick={handleMenuClose}
-                  sx={{ "& a": { width: "100%" } }}
-                >
-                  <a
-                    href={item.href}
-                    className="w-full py-1.5 hover:text-orange-500 transition-colors duration-300"
+                <MenuItem key={item.label} onClick={handleMenuClose}>
+                  <NavLink
+                    to={item.to}
+                    className="w-full py-1.5 text-center transition-colors duration-300 hover:text-orange-500"
                   >
                     {item.label}
-                  </a>
+                  </NavLink>
                 </MenuItem>
               ))}
 
               <MenuItem onClick={handleMenuClose}>
-                <a
-                  href="#contact"
-                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center hover:text-orange-500 transition-colors duration-300"
+                <NavLink
+                  to="/get-quote"
+                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-center transition-colors duration-300 hover:text-orange-500"
                 >
                   Get Quote
-                </a>
+                </NavLink>
               </MenuItem>
             </Menu>
           </div>
