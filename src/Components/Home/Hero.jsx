@@ -1,3 +1,4 @@
+// src/Components/Home/Hero.jsx
 import { motion } from "framer-motion";
 import ModelViewer from "./ModelViewer.jsx";
 
@@ -7,7 +8,7 @@ const leftVariants = {
 };
 
 const rightVariants = {
-  hidden: { opacity: 0, x: -40 },
+  hidden: { opacity: 0, x: 40 },
   show: {
     opacity: 1,
     x: 0,
@@ -25,17 +26,19 @@ export default function Hero() {
         px-6 sm:px-10 lg:px-20
         overflow-hidden
         gap-4 sm:gap-6 lg:gap-0
-        will-change-transform
         text-white
-        bg-[#0a0a0b]
+        bg-black
       "
-      style={{ transform: 'translateZ(0)' }}
+      style={{ transform: "translateZ(0)" }}
     >
-      {/* === BACKGROUND (consistent with Vision & WhyUs) === */}
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(25%_25%_at_50%_55%,rgba(40,40,40,0.6)_0%,rgba(10,10,11,1)_80%)]" />
-      <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
-      <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+      {/* === PURE BLACK BACKGROUND WITH SUBTLE ORANGE HOLLOWS === */}
+      <div className="absolute inset-0 bg-black -z-20" />
+      <div className="pointer-events-none absolute -left-40 top-32 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+      <div className="pointer-events-none absolute right-40 top-1/3 h-[380px] w-[380px] rounded-full bg-orange-500/10 blur-3xl -z-10" />
+      <div className="pointer-events-none absolute bottom-16 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl opacity-60 -z-10" />
+
+      {/* Subtle grain pattern overlay for texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.05)_21px,transparent_22px)] -z-10" />
 
       {/* === LEFT CONTENT === */}
       <motion.div
@@ -49,7 +52,7 @@ export default function Hero() {
           h-full
           relative z-10
         "
-        style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}
+        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <p className="uppercase tracking-[8px] text-xs sm:text-sm text-orange-500/80 mb-1 sm:mb-2">
@@ -88,15 +91,12 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* === CENTER MODEL VIEWER (visible and clear) === */}
+      {/* === CENTER MODEL VIEWER === */}
       <div className="flex flex-1 items-center justify-center relative z-[20] min-h-[60vh] lg:min-h-full">
-        {/* Soft neutral halo behind model */}
+        {/* Ambient halo */}
         <div
           aria-hidden
-          className="
-            pointer-events-none absolute inset-0 -z-10
-            flex items-center justify-center
-          "
+          className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center"
         >
           <div
             className="
@@ -107,7 +107,7 @@ export default function Hero() {
           />
         </div>
 
-        {/* Orange base glow to merge with Vision */}
+        {/* Orange base glow under model */}
         <div
           aria-hidden
           className="
@@ -117,7 +117,7 @@ export default function Hero() {
           "
         />
 
-        {/* Actual model */}
+        {/* Actual 3D model */}
         <div className="relative z-[30] flex items-center justify-center">
           <ModelViewer />
         </div>
@@ -134,7 +134,7 @@ export default function Hero() {
           h-full
           relative z-10
         "
-        style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}
+        style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
           <h2 className="text-lg sm:text-xl text-white/90">

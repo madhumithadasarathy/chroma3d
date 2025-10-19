@@ -1,4 +1,4 @@
-// Vision.jsx — Chroma3D "Hologram Pillar" Vision/Mission showcase (clean version)
+// src/Components/Home/Vision.jsx — Chroma3D "Hologram Pillar" Vision/Mission showcase (true black + ambient orange hollows)
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -19,15 +19,19 @@ export default function Vision() {
   }, [auto]);
 
   return (
-    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-[#0a0a0b] text-neutral-200">
-      {/* === BACKGROUND (Top orange glow removed) === */}
-      {/* Subtle grain only */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-      {/* ⛔ Removed the orange radial glow that caused top light */}
-      {/* <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_0%,rgba(249,115,22,0.08),transparent_60%)]" /> */}
+    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-black text-neutral-200">
+      {/* === PURE BLACK BACKGROUND WITH ORANGE HOLLOWS === */}
+      <div className="absolute inset-0 bg-black" />
+      {/* Soft ambient orange glows for depth */}
+      <div className="pointer-events-none absolute -left-40 top-32 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute right-40 top-1/3 h-[380px] w-[380px] rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl opacity-50" />
+
+      {/* Subtle grain pattern */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.05)_21px,transparent_22px)]" />
 
       {/* Header */}
-      <div className="absolute top-10 w-full px-6 text-center">
+      <div className="absolute top-10 w-full px-6 text-center z-10">
         <div className="mb-2 inline-flex items-center gap-3 text-[15px] tracking-[0.3em] text-orange-500/80">
           <span className="h-[1px] w-8 bg-orange-500/60" /> VISION • MISSION{" "}
           <span className="h-[1px] w-8 bg-orange-500/60" />
@@ -79,11 +83,11 @@ export default function Vision() {
       </div>
 
       {/* Hologram Stage */}
-      <div className="relative mx-auto mt-16 grid w-[min(92vw,900px)] place-items-center">
+      <div className="relative mx-auto mt-16 grid w-[min(92vw,900px)] place-items-center z-10">
         {/* Base */}
         <div className="relative h-36 w-[min(84vw,720px)]">
-          <div className="absolute inset-x-0 bottom-0 h-8 rounded-full bg-neutral-900 ring-1 ring-neutral-800/70 shadow-[0_30px_120px_rgba(0,0,0,0.6)]" />
-          <div className="absolute inset-x-[18%] bottom-5 h-2 rounded-full bg-[conic-gradient(from_0deg,rgba(249,115,22,0.3),transparent_30%,transparent_70%,rgba(249,115,22,0.25))] blur-[6px]" />
+          {/* Pure black base — no orange reflection */}
+          <div className="absolute inset-x-0 bottom-0 h-8 rounded-full bg-neutral-950 ring-1 ring-neutral-800/70 shadow-[0_30px_120px_rgba(0,0,0,0.6)]" />
           <div className="absolute left-1/2 bottom-6 h-10 w-10 -translate-x-1/2 rounded-full bg-neutral-950 ring-1 ring-neutral-800/70" />
         </div>
 
@@ -92,14 +96,10 @@ export default function Vision() {
           <div
             className="absolute h-full w-[2px]"
             style={{
-              background:
-                "linear-gradient(to bottom, transparent, " +
-                ORANGE_SOFT +
-                ", transparent)",
+              background: `linear-gradient(to bottom, transparent, ${ORANGE_SOFT}, transparent)`,
               filter: "drop-shadow(0 0 16px rgba(249,115,22,0.45))",
             }}
           />
-          <div className="absolute bottom-12 h-40 w-40 rounded-full bg-orange-500/10 blur-3xl" />
           <motion.div
             className="absolute h-[60%] w-[60%] rounded-full ring-1"
             style={{ boxShadow: `inset 0 0 0 1px ${WHITE_SOFT}` }}
@@ -150,10 +150,6 @@ export default function Vision() {
           )}
         </AnimatePresence>
       </div>
-
-      {/* Ambient side glows (keep) */}
-      <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl" />
     </section>
   );
 }
@@ -167,7 +163,8 @@ function HoloCard({ title, lines }) {
       transition={{ duration: 0.5, ease: [0.2, 0.65, 0.3, 0.9] }}
       className="relative z-10 -mt-[min(24vh,220px)] w-[min(88vw,780px)]"
     >
-      <div className="relative rounded-2xl border border-neutral-800/70 bg-neutral-900/50 p-6 text-center shadow-[0_20px_100px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl md:p-8">
+      <div className="relative rounded-2xl border border-neutral-800/70 bg-neutral-900/60 p-6 text-center shadow-[0_20px_100px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl md:p-8">
+        {/* Light sweep effect */}
         <motion.div
           initial={{ x: "-120%" }}
           animate={{ x: ["-120%", "120%"], opacity: [0, 0.35, 0] }}
@@ -194,7 +191,7 @@ function HoloCard({ title, lines }) {
             </motion.p>
           ))}
         </div>
-        <div className="pointer-events-none absolute inset-x-20 -bottom-6 h-10 rounded-full bg-orange-500/20 blur-2xl" />
+        {/* Removed orange glow below card — full black base now */}
       </div>
     </motion.div>
   );
