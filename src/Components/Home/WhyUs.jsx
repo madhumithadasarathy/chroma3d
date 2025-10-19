@@ -24,7 +24,7 @@ const FEATURES = [
   },
   {
     title: "Dedicated Collaboration",
-    desc: "From file prep to final polish — guided at every step.",
+    desc: "From file prep to final polish, guided at every step.",
     icon: Handshake,
   },
 ];
@@ -62,7 +62,7 @@ export default function WhyUs() {
           Why Choose <span className="text-orange-500">Chroma3D</span>
         </h2>
         <p className="text-neutral-400 text-sm md:text-base mb-10">
-          A fusion of precision, imagination, and sustainable engineering — designed to redefine creation.
+          A fusion of precision, imagination, and sustainable engineering. Designed to redefine creation.
         </p>
 
         {/* Bento Grid */}
