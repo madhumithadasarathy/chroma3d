@@ -36,7 +36,7 @@ export default function Footer() {
             CONTACT
           </h3>
           <div className="space-y-2 text-sm leading-relaxed text-neutral-300">
-            <p className="font-medium text-white">Sriram V</p>
+            <p className="font-medium text-white">Chroma3D</p>
             <p className="hover:text-orange-500 transition-colors">
               <a href="tel:+919342972807">+91 93429 72807</a>
             </p>

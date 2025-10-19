@@ -1,4 +1,4 @@
-// src/Components/Home/Vision.jsx — Chroma3D "Hologram Pillar" Vision/Mission showcase (true black + ambient orange hollows)
+// src/Components/Home/Vision.jsx — Fullscreen Hologram Pillar (True Black + Ambient Orange Hollows)
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -19,10 +19,18 @@ export default function Vision() {
   }, [auto]);
 
   return (
-    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-black text-neutral-200">
+    <section
+      className="
+        relative flex flex-col items-center justify-center
+        min-h-screen w-full
+        overflow-hidden
+        bg-black text-neutral-200
+      "
+    >
       {/* === PURE BLACK BACKGROUND WITH ORANGE HOLLOWS === */}
       <div className="absolute inset-0 bg-black" />
-      {/* Soft ambient orange glows for depth */}
+
+      {/* Ambient orange glows */}
       <div className="pointer-events-none absolute -left-40 top-32 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
       <div className="pointer-events-none absolute right-40 top-1/3 h-[380px] w-[380px] rounded-full bg-orange-500/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-10 left-1/2 -translate-x-1/2 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl opacity-50" />
@@ -82,11 +90,10 @@ export default function Vision() {
         </button>
       </div>
 
-      {/* Hologram Stage */}
-      <div className="relative mx-auto mt-16 grid w-[min(92vw,900px)] place-items-center z-10">
+      {/* === Hologram Stage === */}
+      <div className="relative mx-auto mt-24 grid w-[min(92vw,900px)] place-items-center z-10 pb-20">
         {/* Base */}
         <div className="relative h-36 w-[min(84vw,720px)]">
-          {/* Pure black base — no orange reflection */}
           <div className="absolute inset-x-0 bottom-0 h-8 rounded-full bg-neutral-950 ring-1 ring-neutral-800/70 shadow-[0_30px_120px_rgba(0,0,0,0.6)]" />
           <div className="absolute left-1/2 bottom-6 h-10 w-10 -translate-x-1/2 rounded-full bg-neutral-950 ring-1 ring-neutral-800/70" />
         </div>
@@ -191,7 +198,6 @@ function HoloCard({ title, lines }) {
             </motion.p>
           ))}
         </div>
-        {/* Removed orange glow below card — full black base now */}
       </div>
     </motion.div>
   );
