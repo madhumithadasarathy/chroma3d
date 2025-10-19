@@ -3,7 +3,8 @@ import Hero from "./Hero.jsx";
 import WhyUs from "./WhyUs.jsx";
 import Vision from "./Vision.jsx";
 import Working from "./Working.jsx"; // ⬅️ Added import
-
+import Statement from "./Statement.jsx"; // ⬅️
+//  Added import
 export default function Home() {
   return (
     <main className="min-h-screen">
@@ -26,6 +27,9 @@ export default function Home() {
       <section id="working" className="scroll-mt-20 -mt-[2px]">
         <Working />
       </section>
+      <section id="statement" className="scroll-mt-20">
+  <Statement />
+</section>
     </main>
   );
 }
