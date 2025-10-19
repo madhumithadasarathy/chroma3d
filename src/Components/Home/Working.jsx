@@ -1,6 +1,6 @@
 // src/Components/Home/Working_LadderWithImage.jsx
 import { motion, useAnimation } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 const steps = [
@@ -14,7 +14,7 @@ const steps = [
 export default function Working() {
   const [active, setActive] = useState(0);
   const controls = useAnimation();
-  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true }); // triggers once when 30% visible
+  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true });
 
   useEffect(() => {
     if (inView) controls.start("visible");
@@ -29,9 +29,9 @@ export default function Working() {
   return (
     <section
       ref={ref}
-      className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-[#000000] text-neutral-200 px-8"
+      className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-black text-neutral-200 px-8"
     >
-      {/* === Ambient Glows (Soft Orange Hollows) === */}
+      {/* === Ambient Orange Hollows === */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={controls}
@@ -69,24 +69,29 @@ export default function Working() {
         </p>
       </motion.div>
 
-      {/* === Right Half with Background Image and Glass Ladder === */}
+      {/* === Right Section (Background shifted to far right) === */}
       <motion.div
         initial={{ opacity: 0, x: 80 }}
         animate={controls}
         variants={{
           visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut", delay: 0.3 } },
         }}
-        className="relative w-full md:w-1/2 flex items-center justify-center h-[500px] md:h-[600px]"
+        className="relative w-full md:w-1/2 flex items-center justify-start md:justify-end h-[500px] md:h-[600px]"
       >
-        {/* Background Image (no black overlay) */}
+        {/* Background Image — anchored to far right */}
         <img
           src="/working_bg.svg"
           alt="Working process background"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50"
+          className="absolute right-0 top-0 w-[110%] h-full object-cover object-right"
+          style={{
+            borderRadius: "0",
+            minHeight: "100%",
+            transform: "translateX(5%)", // pushes the image a bit beyond viewport edge
+          }}
         />
 
-        {/* Ladder Flow - Each Glassmorphic Card */}
-        <div className="relative z-10 flex flex-col items-start justify-center w-[85%] space-y-6">
+        {/* Ladder Flow - Shifted left for balance */}
+        <div className="relative z-10 flex flex-col items-start justify-center w-[75%] md:w-[65%] translate-x-[-5%] space-y-6">
           {steps.map((s, i) => (
             <motion.div
               key={i}
