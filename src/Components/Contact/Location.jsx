@@ -1,4 +1,3 @@
-// src/Components/Contact/Location.jsx
 import { motion } from "framer-motion";
 import PlaceIcon from "@mui/icons-material/Place";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
@@ -17,22 +16,20 @@ export default function Location() {
     "inline-flex items-center gap-2 rounded-full bg-orange-500/10 border border-orange-600/40 px-3 py-1.5 text-xs font-medium text-orange-300 shadow-sm";
 
   return (
-    <section className="mx-4 my-10 relative text-neutral-200 bg-black">
-      {/* Soft orange ambient background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.08]"
-        style={{
-          background:
-            "radial-gradient(600px 200px at 20% 20%, rgba(249,115,22,0.3) 0%, transparent 60%), radial-gradient(600px 200px at 80% 80%, rgba(255,115,22,0.25) 0%, transparent 60%)",
-        }}
-      />
+    <section className="relative overflow-hidden min-h-[70vh] flex items-center justify-center text-neutral-200 bg-black px-6 py-12 md:px-10">
+      {/* === Background Layers === */}
+      <div className="absolute inset-0 bg-black" />
+      <div className="pointer-events-none absolute -top-20 left-10 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 right-20 h-[400px] w-[400px] rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.05)_21px,transparent_22px)]" />
 
+      {/* === Foreground === */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative z-10 rounded-2xl border border-neutral-800 bg-black/60 shadow-[0_0_50px_rgba(249,115,22,0.08)] overflow-hidden backdrop-blur-xl"
+        className="relative z-10 w-full rounded-2xl border border-neutral-800 bg-white/5 backdrop-blur-xl shadow-[0_0_50px_rgba(249,115,22,0.08)] overflow-hidden"
       >
         <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-5 gap-8 items-center">
           {/* === Left Section === */}
