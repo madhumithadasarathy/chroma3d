@@ -1,6 +1,8 @@
+// src/Components/Contact/Contact.jsx
 import { motion } from "framer-motion";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Location from "./Location.jsx"; // Integrated location section
 
 export default function Contact() {
   const [open, setOpen] = useState(null);
@@ -24,23 +26,28 @@ export default function Contact() {
     },
   ];
 
-  const whatsappNumber = "919342972807";
+  const whatsappNumber = "919342972807"; // ✅ Your business WhatsApp number
 
   const handleWhatsAppMessage = (e) => {
     e.preventDefault();
+
+    // Get form field values
     const name = e.target.name.value;
     const email = e.target.email.value;
     const subject = e.target.subject.value;
     const message = e.target.message.value;
-    const fullMessage = encodeURIComponent(
-      `Hi, I have a query about Chroma3D!\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`
-    );
-    window.open(`https://wa.me/${whatsappNumber}?text=${fullMessage}`, "_blank");
+
+    // Create formatted WhatsApp message
+    const text = `👋 Hi Chroma3D Team! I have a query.\n\n*Name:* ${name}\n*Email:* ${email}\n*Subject:* ${subject}\n*Message:* ${message}`;
+    const encodedText = encodeURIComponent(text);
+
+    // Open WhatsApp chat with prefilled message
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodedText}`, "_blank");
   };
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-black text-neutral-200 overflow-hidden px-6 py-16 md:px-12">
-      {/* === Ambient Background === */}
+      {/* === Background === */}
       <div className="absolute inset-0 bg-black" />
       <div className="pointer-events-none absolute -top-20 left-10 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-20 h-[400px] w-[400px] rounded-full bg-orange-500/10 blur-3xl" />
@@ -93,6 +100,7 @@ export default function Contact() {
               required
             />
           </div>
+
           <input
             type="text"
             name="subject"
@@ -100,6 +108,7 @@ export default function Contact() {
             className="rounded-lg bg-black/60 border border-neutral-700/80 px-4 py-3 text-white focus:outline-none focus:border-orange-500/80 transition"
             required
           />
+
           <textarea
             name="message"
             placeholder="Your Message"
@@ -113,39 +122,15 @@ export default function Contact() {
             whileTap={{ scale: 0.97 }}
             className="mt-2 self-center md:self-start bg-orange-600/90 hover:bg-orange-500 text-white font-medium px-6 py-3 rounded-lg transition"
           >
-            Send Message →
+            Send via WhatsApp →
           </motion.button>
         </form>
       </motion.div>
 
-      {/* === Location Section === */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, ease: "easeOut", delay: 0.3 }}
-        className="relative z-10 mt-20 w-full max-w-3xl text-center"
-      >
-        <h2
-          className="text-3xl md:text-4xl font-semibold text-white mb-6"
-          style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
-        >
-          Our <span className="text-orange-500">Location</span>
-        </h2>
-        <p className="text-sm md:text-base text-neutral-400 mb-6">
-          Visit us at our studio in Chennai — where creativity meets precision.
-        </p>
-        <div className="rounded-xl overflow-hidden border border-neutral-800 shadow-[0_0_40px_rgba(249,115,22,0.05)]">
-          <iframe
-            title="Chroma3D Location"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.226639278774!2d80.217431775076!3d13.045587687264457!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52673e0bce8d61%3A0x7f3e5c09aee6e9df!2sWest%20Mambalam%2C%20Chennai%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1708863500000!5m2!1sen!2sin"
-            width="100%"
-            height="350"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
-        </div>
-      </motion.div>
+      {/* === Location Section (from Location.jsx) === */}
+      <div className="relative z-10 mt-24 w-full max-w-6xl">
+        <Location />
+      </div>
 
       {/* === FAQ Section === */}
       <motion.div
