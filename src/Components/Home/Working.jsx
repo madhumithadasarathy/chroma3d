@@ -72,7 +72,7 @@ export default function Working() {
           The <span className="text-orange-500">Working Ladder</span>
         </h2>
         <p className="mt-4 text-sm md:text-base text-neutral-400 max-w-md">
-          A simple, precise, and reliable workflow — turning your ideas into flawless 3D creations.
+          A simple, precise, and reliable workflow, turning your ideas into flawless 3D creations.
         </p>
       </motion.div>
 
