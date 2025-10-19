@@ -7,6 +7,9 @@ import YouTubeIcon from "@mui/icons-material/YouTube";
 export default function Footer() {
   return (
     <footer className="relative bg-black text-neutral-300 py-12 px-8 overflow-hidden">
+      {/* === Top Gradient Line === */}
+      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-black via-orange-600 to-black" />
+
       {/* === Orange glows === */}
       <div className="pointer-events-none absolute top-10 left-16 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-10 right-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl" />
@@ -22,34 +25,26 @@ export default function Footer() {
             Chroma<span className="text-orange-500">3D</span>
           </h2>
           <p className="mt-3 text-sm text-neutral-400 max-w-xs leading-relaxed">
-            Transforming imagination into precision-crafted reality —
+            Transforming imagination into precision-crafted reality,
             where art meets engineering.
           </p>
         </div>
 
-        {/* --- Column 2: Quick links --- */}
+        {/* --- Column 2: Contact Details --- */}
         <div className="flex flex-col sm:items-center lg:items-start">
           <h3 className="text-orange-500/90 font-semibold mb-3 tracking-wider">
-            QUICK LINKS
+            CONTACT
           </h3>
-          <ul className="space-y-2 text-sm">
-            {[
-              { name: "Home", href: "#home" },
-              { name: "Vision", href: "#vision" },
-              { name: "Why Us", href: "#why-us" },
-              { name: "Working", href: "#working" },
-              { name: "Contact", href: "#contact" },
-            ].map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="hover:text-orange-500 transition-colors duration-200"
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-2 text-sm leading-relaxed text-neutral-300">
+            <p className="font-medium text-white">Sriram V</p>
+            <p className="hover:text-orange-500 transition-colors">
+              <a href="tel:+919342972807">+91 93429 72807</a>
+            </p>
+            <p className="max-w-xs">
+              C23, 1st Floor RE Classic Apartments, 68, Baroda 3rd Street, <br />
+              West Mambalam, Chennai – 600033
+            </p>
+          </div>
         </div>
 
         {/* --- Column 3: Socials --- */}
