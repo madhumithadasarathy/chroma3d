@@ -19,14 +19,14 @@ export default function Working() {
   }, []);
 
   return (
-    <section className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center bg-[#0a0a0b] text-neutral-200 overflow-hidden px-8">
-      {/* Background */}
-      <div className="absolute inset-0 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-      <div className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -right-24 bottom-20 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+    <section className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-[#000000] text-neutral-200 px-8">
+      {/* === Ambient Glows (Soft Orange Hollows) === */}
+      <div className="pointer-events-none absolute top-20 left-24 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-32 right-32 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute -top-10 right-20 h-48 w-48 rounded-full bg-orange-500/5 blur-3xl" />
 
-      {/* Left Panel */}
-      <div className="relative w-full md:w-1/2 flex flex-col items-start justify-center mb-10 md:mb-0 z-10">
+      {/* === Left Panel === */}
+      <div className="relative w-full md:w-1/2 flex flex-col items-start justify-center mb-10 md:mb-0 z-20">
         <div className="mb-2 text-[15px] tracking-[0.3em] text-orange-500/80">
           OUR PROCESS
         </div>
@@ -37,59 +37,66 @@ export default function Working() {
           The <span className="text-orange-500">Working Ladder</span>
         </h2>
         <p className="mt-4 text-sm md:text-base text-neutral-400 max-w-md">
-          Every step in our process builds on the last — rising steadily toward
-          a flawless creation. From concept to final print, we climb this ladder
-          of imagination together.
+          Every step in our process builds upon the previous — progressing toward
+          precision and perfection. Each stage glows with creativity and clarity.
         </p>
       </div>
 
-      {/* Right Half with Image and Ladder Overlay */}
+      {/* === Right Half with Background Image and Glass Ladder === */}
       <div className="relative w-full md:w-1/2 flex items-center justify-center h-[500px] md:h-[600px]">
-        {/* Background Image */}
+        {/* Background Image (no black overlay) */}
         <img
-          src="/working_bg.jpg"
+          src="/working_bg.svg"
           alt="Working process background"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-30 md:opacity-40"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-25"
         />
 
-        {/* Ladder Overlay */}
-        <div className="relative flex flex-col items-start justify-center w-[80%]">
-          {/* Vertical glowing line */}
-          <motion.div
-            className="absolute left-3 top-0 w-[2px] bg-gradient-to-b from-transparent via-orange-500/50 to-transparent"
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ height: "85%" }}
-          />
-
+        {/* Ladder Flow - Each Glassmorphic Card */}
+        <div className="relative z-10 flex flex-col items-start justify-center w-[85%] space-y-6">
           {steps.map((s, i) => (
             <motion.div
               key={i}
-              className="relative flex items-start mb-8 pl-6"
-              initial={{ opacity: 0, x: -30 }}
+              className={`relative w-full rounded-xl border backdrop-blur-md px-6 py-4 shadow-[0_0_30px_rgba(0,0,0,0.6)]
+                ${active === i ? "border-orange-500/60 bg-white/10" : "border-neutral-800/40 bg-white/5"}
+              `}
+              initial={{ opacity: 0, y: 30 }}
               animate={{
-                opacity: active >= i ? 1 : 0.3,
-                x: active === i ? 0 : -10,
+                opacity: active >= i ? 1 : 0.4,
+                y: active === i ? 0 : 10,
+                boxShadow:
+                  active === i
+                    ? "0 0 25px rgba(249,115,22,0.4), inset 0 0 12px rgba(249,115,22,0.3)"
+                    : "0 0 0 rgba(0,0,0,0)",
               }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
             >
-              {/* Step node */}
-              <div
-                className={`absolute left-0 top-[6px] w-[10px] h-[10px] rounded-full ${
-                  active === i
-                    ? "bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.6)]"
-                    : "bg-neutral-700"
-                }`}
-              />
-              <div>
-                <h3
-                  className={`font-semibold ${
-                    active === i ? "text-orange-400" : "text-neutral-400"
-                  }`}
-                >
-                  {s.title}
-                </h3>
-                <p className="text-xs md:text-sm text-neutral-300 max-w-sm mt-1">
+              {/* Orange Pulse Glow when Active */}
+              {active === i && (
+                <motion.div
+                  className="absolute inset-0 rounded-xl bg-orange-500/10"
+                  animate={{ opacity: [0.3, 0.7, 0.3] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              )}
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-[12px] h-[12px] rounded-full ${
+                      active === i
+                        ? "bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)]"
+                        : "bg-neutral-700"
+                    }`}
+                  />
+                  <h3
+                    className={`font-semibold ${
+                      active === i ? "text-orange-400" : "text-neutral-300"
+                    }`}
+                  >
+                    {s.title}
+                  </h3>
+                </div>
+                <p className="mt-2 text-xs md:text-sm text-neutral-300 leading-snug">
                   {s.text}
                 </p>
               </div>
