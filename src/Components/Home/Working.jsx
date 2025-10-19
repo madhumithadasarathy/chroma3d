@@ -1,4 +1,3 @@
-// src/Components/Home/Working_LadderWithImage.jsx
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -29,7 +28,13 @@ export default function Working() {
   return (
     <section
       ref={ref}
-      className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-black text-neutral-200 px-8"
+      className="
+        relative flex flex-col md:flex-row min-h-[92vh] 
+        items-center justify-center overflow-hidden bg-black text-neutral-200 
+        px-8
+        mt-16 sm:mt-10 md:mt-0 md:pt-10
+      "
+      // ↑ Extra spacing (mt-16) only on small screens
     >
       {/* === Ambient Orange Hollows === */}
       <motion.div
@@ -62,11 +67,13 @@ export default function Working() {
         }}
         className="relative w-full md:w-1/2 flex flex-col items-start justify-center mb-10 md:mb-0 z-20"
       >
-        <div className="mb-2 text-[15px] tracking-[0.3em] text-orange-500/80">
+        {/* Visible only on medium+ screens */}
+        <div className="hidden md:block mb-2 text-[15px] tracking-[0.3em] text-orange-500/80 md:mt-10 sm:mt-10">
           OUR PROCESS
         </div>
+
         <h2
-          className="text-4xl md:text-5xl font-semibold text-white"
+          className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white"
           style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
         >
           The <span className="text-orange-500">Working Ladder</span>
