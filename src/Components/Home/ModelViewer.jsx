@@ -6,10 +6,10 @@ import { Color, MeshStandardMaterial } from "three";
 
 /**
  * ModelViewer
- * - Defaults to /natraj.glb (in /public)
- * - Keeps model’s original materials by default (set overrideBronze=true to force bronze)
+ * - Defaults to /ganesha.glb (in /public)
+ * - Bronze material with soft emissive glow (no harsh orange light)
  */
-export default function ModelViewer({ src = "/natraj.glb", overrideBronze = false }) {
+export default function ModelViewer({ src = "/ganesha.glb", overrideBronze = true }) {
   const controls = useRef(null);
 
   useEffect(() => {
@@ -39,12 +39,14 @@ export default function ModelViewer({ src = "/natraj.glb", overrideBronze = fals
           style={{ background: "transparent" }}
           shadows
         >
-          {/* Lights tuned for dark UI */}
-          <ambientLight intensity={0.8} />
-          <hemisphereLight intensity={0.6} groundColor="#1a1a1a" />
-          <directionalLight position={[2.5, 3.5, 3]} intensity={1.2} color="#fff9e8" castShadow />
+          {/* Balanced warm lights for bronze look */}
+          <ambientLight intensity={0.7} />
+          <hemisphereLight intensity={0.45} groundColor="#1a1a1a" />
+          <directionalLight position={[2.5, 3.5, 3]} intensity={1.1} color="#fff4e5" castShadow />
           <directionalLight position={[-3, 1.2, -2]} intensity={0.55} color="#ff8c42" />
-          <directionalLight position={[3, 0.6, -1.5]} intensity={0.35} color="#9ec3ff" />
+          <directionalLight position={[3, 0.6, -1.5]} intensity={0.3} color="#ffb347" />
+
+          {/* Environment reflection */}
           <Environment preset="studio" intensity={0.65} />
 
           <Suspense fallback={null}>
@@ -90,13 +92,12 @@ function Sculpture({ url, overrideBronze }) {
   const clone = useMemo(() => scene.clone(true), [scene]);
 
   useEffect(() => {
-    // Optional bronze override (set overrideBronze=true on ModelViewer to use)
     const bronze = new MeshStandardMaterial({
       color: new Color("#c67c36"),
-      metalness: 0.8,
-      roughness: 0.4,
-      emissive: new Color("#2b1406"),
-      emissiveIntensity: 0.35,
+      metalness: 1.0,
+      roughness: 0.3,
+      emissive: new Color("#ff6a00"),
+      emissiveIntensity: 0.15, // reduced for softer glow
     });
 
     clone.traverse((o) => {
@@ -111,5 +112,5 @@ function Sculpture({ url, overrideBronze }) {
   return <primitive object={clone} position={[0, -0.12, 0]} scale={1.3} />;
 }
 
-// Preload your natraj model
-useGLTF.preload("/natraj.glb");
+// Preload Ganesha model
+useGLTF.preload("/ganesha.glb");
