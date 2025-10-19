@@ -1,6 +1,7 @@
 // src/Components/Home/Working_LadderWithImage.jsx
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useAnimation } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { useInView } from "react-intersection-observer";
 
 const steps = [
   { title: "Concept", text: "The spark of creativity — where imagination begins." },
@@ -12,21 +13,47 @@ const steps = [
 
 export default function Working() {
   const [active, setActive] = useState(0);
+  const controls = useAnimation();
+  const { ref, inView } = useInView({ threshold: 0.3, triggerOnce: true }); // triggers once when 30% visible
 
   useEffect(() => {
+    if (inView) controls.start("visible");
+  }, [inView, controls]);
+
+  useEffect(() => {
+    if (!inView) return;
     const id = setInterval(() => setActive((a) => (a + 1) % steps.length), 4500);
     return () => clearInterval(id);
-  }, []);
+  }, [inView]);
 
   return (
-    <section className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-[#000000] text-neutral-200 px-8">
+    <section
+      ref={ref}
+      className="relative flex flex-col md:flex-row min-h-[92vh] items-center justify-center overflow-hidden bg-[#000000] text-neutral-200 px-8"
+    >
       {/* === Ambient Glows (Soft Orange Hollows) === */}
-      <div className="pointer-events-none absolute top-20 left-24 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-32 right-32 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
-      <div className="pointer-events-none absolute -top-10 right-20 h-48 w-48 rounded-full bg-orange-500/5 blur-3xl" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={controls}
+        variants={{ visible: { opacity: 1, scale: 1, transition: { duration: 1.5 } } }}
+        className="pointer-events-none absolute top-20 left-24 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl"
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={controls}
+        variants={{ visible: { opacity: 1, scale: 1, transition: { duration: 1.8, delay: 0.2 } } }}
+        className="pointer-events-none absolute bottom-32 right-32 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl"
+      />
 
       {/* === Left Panel === */}
-      <div className="relative w-full md:w-1/2 flex flex-col items-start justify-center mb-10 md:mb-0 z-20">
+      <motion.div
+        initial={{ opacity: 0, x: -80 }}
+        animate={controls}
+        variants={{
+          visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } },
+        }}
+        className="relative w-full md:w-1/2 flex flex-col items-start justify-center mb-10 md:mb-0 z-20"
+      >
         <div className="mb-2 text-[15px] tracking-[0.3em] text-orange-500/80">
           OUR PROCESS
         </div>
@@ -40,15 +67,22 @@ export default function Working() {
           Every step in our process builds upon the previous — progressing toward
           precision and perfection. Each stage glows with creativity and clarity.
         </p>
-      </div>
+      </motion.div>
 
       {/* === Right Half with Background Image and Glass Ladder === */}
-      <div className="relative w-full md:w-1/2 flex items-center justify-center h-[500px] md:h-[600px]">
+      <motion.div
+        initial={{ opacity: 0, x: 80 }}
+        animate={controls}
+        variants={{
+          visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut", delay: 0.3 } },
+        }}
+        className="relative w-full md:w-1/2 flex items-center justify-center h-[500px] md:h-[600px]"
+      >
         {/* Background Image (no black overlay) */}
         <img
           src="/working_bg.svg"
           alt="Working process background"
-          className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-25"
+          className="absolute inset-0 w-full h-full object-cover rounded-xl opacity-50"
         />
 
         {/* Ladder Flow - Each Glassmorphic Card */}
@@ -57,20 +91,17 @@ export default function Working() {
             <motion.div
               key={i}
               className={`relative w-full rounded-xl border backdrop-blur-md px-6 py-4 shadow-[0_0_30px_rgba(0,0,0,0.6)]
-                ${active === i ? "border-orange-500/60 bg-white/10" : "border-neutral-800/40 bg-white/5"}
-              `}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{
-                opacity: active >= i ? 1 : 0.4,
-                y: active === i ? 0 : 10,
-                boxShadow:
-                  active === i
-                    ? "0 0 25px rgba(249,115,22,0.4), inset 0 0 12px rgba(249,115,22,0.3)"
-                    : "0 0 0 rgba(0,0,0,0)",
+                ${active === i ? "border-orange-500/60 bg-white/10" : "border-neutral-800/40 bg-white/5"}`}
+              initial={{ opacity: 0, y: 40 }}
+              animate={controls}
+              variants={{
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6, delay: 0.5 + i * 0.15 },
+                },
               }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
             >
-              {/* Orange Pulse Glow when Active */}
               {active === i && (
                 <motion.div
                   className="absolute inset-0 rounded-xl bg-orange-500/10"
@@ -103,7 +134,7 @@ export default function Working() {
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
