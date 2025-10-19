@@ -3,8 +3,14 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import TwitterIcon from "@mui/icons-material/Twitter";
 import YouTubeIcon from "@mui/icons-material/YouTube";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 export default function Footer() {
+  // WhatsApp link with auto message
+  const whatsappNumber = "919342972807"; // replace with your number (no '+' sign)
+  const message = encodeURIComponent("Hi, I have a query about Chroma3D!");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${message}`;
+
   return (
     <footer className="relative bg-black text-neutral-300 py-12 px-8 overflow-hidden">
       {/* === Top Gradient Line === */}
@@ -62,6 +68,17 @@ export default function Footer() {
             >
               <InstagramIcon fontSize="medium" />
             </motion.a>
+
+            <motion.a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.15 }}
+              className="text-white hover:text-orange-500 transition"
+            >
+              <WhatsAppIcon fontSize="medium" />
+            </motion.a>
+
             <motion.a
               href="#"
               whileHover={{ scale: 1.15 }}
