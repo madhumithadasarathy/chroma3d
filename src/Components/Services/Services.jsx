@@ -1,146 +1,190 @@
-// src/Components/Home/ModelViewer.jsx
-import { Canvas } from "@react-three/fiber";
+// src/Components/Services/Services.jsx
+import { motion } from "framer-motion";
 import {
-  OrbitControls,
-  useGLTF,
-  Bounds,
-  Environment,
-  ContactShadows,
-  Center,
-} from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useRef } from "react";
-import { MeshStandardMaterial } from "three";
+  CloudUpload,
+  Layers,
+  PackageSearch,
+  Cpu,
+  Leaf,
+  ShieldCheck,
+  Timer,
+  Truck,
+  HelpCircle,
+  Ruler,
+  Hammer,
+  Wrench,
+  MessageSquare,
+  Star,
+  Download,
+} from "lucide-react";
 
-function Sculpture({ bronze = true }) {
-  const { scene } = useGLTF("/ganesha.glb"); // model in /public
-  const clone = useMemo(() => scene.clone(), [scene]);
+const BG = () => (
+  <>
+    <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
+    <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55%_45%_at_50%_45%,rgba(5,5,6,0.95)_0%,rgba(10,10,11,1)_60%,#000_100%)]" />
+    <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+    <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
+  </>
+);
 
-  useEffect(() => {
-    // ensure shadows on all meshes
-    clone.traverse((o) => {
-      if (o.isMesh) {
-        o.castShadow = true;
-        o.receiveShadow = true;
-      }
-    });
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
+};
 
-    // optional bronze override
-    if (bronze) {
-      const bronzeMat = new MeshStandardMaterial({
-        color: "#cd7f32",
-        metalness: 1.0,
-        roughness: 0.35,
-      });
-      clone.traverse((o) => {
-        if (o.isMesh) o.material = bronzeMat;
-      });
-    }
-  }, [bronze, clone]);
+const item = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
-  // centered horizontally; slight down offset
-  return <primitive object={clone} scale={1.35} position={[0, -0.15, 0]} />;
-  // ↑ increased from 1.25 → 1.35 for a gentle size boost
-}
+const materials = [
+  { name: "PLA", desc: "General purpose • many colors • great detail" },
+  { name: "ABS", desc: "Tough • heat resistant • post-process friendly" },
+  { name: "PETG", desc: "Impact + chemical resistance • functional" },
+  { name: "TPU (Flexible)", desc: "Elastomer • flexible parts • grips" },
+  { name: "Resin (SLA/DLP)", desc: "Ultra-fine detail • smooth surface" },
+  { name: "Nylon / PA", desc: "High strength • wear resistant" },
+];
 
-export default function ModelViewer() {
-  const controlsRef = useRef(null);
+const infill = ["10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"];
 
-  // start centered (no left/right offset)
-  useEffect(() => {
-    if (!controlsRef.current) return;
-    controlsRef.current.setAzimuthalAngle(0);
-    controlsRef.current.update();
-  }, []);
+const qualities = [
+  { label: "0.20 mm", tag: "Standard" },
+  { label: "0.15 mm", tag: "Medium" },
+  { label: "0.10 mm", tag: "High" },
+  { label: "0.05 mm", tag: "Ultra" },
+];
 
+export default function Services() {
   return (
-    <div className="flex flex-col items-center justify-start">
-      {/* Canvas wrapper with responsive sizing */}
-      <div
-        className="
-          flex items-center justify-center
-          w-[240px] h-[260px]           /* phones */
-          sm:w-[300px] sm:h-[320px]     /* small tablets */
-          md:w-[360px] md:h-[380px]     /* tablets */
-          lg:w-[460px] lg:h-[520px]     /* laptops/desktops */
-          xl:w-[500px] xl:h-[560px]
-        "
-      >
-        <Canvas
-          camera={{ fov: 30 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true, alpha: true }}
-          style={{ background: "transparent" }}
-          shadows
+    <section className="relative text-white">
+      <BG />
+      <div className="relative mx-auto w-[min(92vw,1100px)] pt-20 pb-10 text-center">
+        <div className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] text-orange-500/80">
+          <span className="h-[1px] w-8 bg-orange-500/60" />
+          SERVICES
+          <span className="h-[1px] w-8 bg-orange-500/60" />
+        </div>
+        <h1
+          className="mt-2 text-4xl md:text-5xl font-semibold"
+          style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
         >
-          <Environment preset="studio" intensity={1} />
-          <directionalLight position={[4, 6, 3]} intensity={0.6} castShadow />
+          Online 3D Printing
+        </h1>
+        <p className="mx-auto mt-3 max-w-2xl text-neutral-400">
+          Instant-ready workflow, engineered quality, and rapid turnarounds — tailored for prototypes and production runs.
+        </p>
 
-          <Suspense fallback={null}>
-            <Center>
-              {/* Slightly reduced margin so model fits perfectly even when scaled up */}
-              <Bounds fit clip observe margin={1.05}>
-                <Sculpture bronze />
-              </Bounds>
-            </Center>
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <label className="group inline-flex items-center gap-2 rounded-xl border border-white/15 bg-black/30 px-4 py-2 hover:border-white/30 transition cursor-pointer">
+            <CloudUpload className="h-5 w-5 text-orange-500" />
+            <span className="text-sm">Upload 3D Model</span>
+            <input type="file" accept=".stl,.step,.3mf,.obj" className="hidden" />
+          </label>
 
-            <ContactShadows
-              opacity={0.35}
-              scale={10}
-              blur={2.5}
-              far={5}
-              resolution={1024}
-            />
-
-            <OrbitControls
-              ref={controlsRef}
-              makeDefault
-              enablePan={false}
-              enableZoom={false}
-              autoRotate={false} /* no full spin; starts centered */
-              enableDamping
-              dampingFactor={0.08}
-              /* lock vertical tilt */
-              minPolarAngle={Math.PI / 2}
-              maxPolarAngle={Math.PI / 2}
-              /* limit left/right sweep around center (~±18°) */
-              minAzimuthAngle={-Math.PI / 10}
-              maxAzimuthAngle={Math.PI / 10}
-              target={[0, 0, 0]}
-            />
-          </Suspense>
-        </Canvas>
+          <a
+            href="#quote"
+            className="inline-flex items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-orange-400 hover:text-white hover:border-white/30 transition"
+          >
+            <MessageSquare className="h-5 w-5" /> Request a Quote
+          </a>
+        </div>
       </div>
 
-      {/* Subtle interaction hint */}
-      <div className="mt-2 flex items-center gap-2 text-[10px] sm:text-xs text-white/60 select-none">
-        {/* left arrow */}
-        <svg
-          aria-hidden
-          viewBox="0 0 24 24"
-          className="h-3 w-3 sm:h-3.5 sm:w-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M15 6l-6 6 6 6" />
-        </svg>
-
-        <span>Hold &amp; drag to move</span>
-
-        {/* right arrow */}
-        <svg
-          aria-hidden
-          viewBox="0 0 24 24"
-          className="h-3 w-3 sm:h-3.5 sm:w-3.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        >
-          <path d="M9 6l6 6-6 6" />
-        </svg>
+      {/* Quality */}
+      <div className="relative mx-auto w-[min(92vw,1100px)] py-10">
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <motion.h2 variants={item} className="text-xl font-semibold mb-3">
+            Layer Heights & Quality
+          </motion.h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {qualities.map((q) => (
+              <motion.div
+                key={q.label}
+                variants={item}
+                className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-4 text-center"
+              >
+                <Layers className="mx-auto mb-2 h-5 w-5 text-orange-500" />
+                <div className="text-lg font-medium">{q.label}</div>
+                <div className="text-xs text-neutral-400">{q.tag}</div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
-    </div>
+
+      {/* Materials */}
+      <div className="relative mx-auto w-[min(92vw,1100px)] py-10">
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <motion.h2 variants={item} className="text-xl font-semibold mb-3">
+            Materials
+          </motion.h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {materials.map((m) => (
+              <motion.div
+                key={m.name}
+                variants={item}
+                whileHover={{ y: -4 }}
+                className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur p-5"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_12px_rgba(249,115,22,0.8)]" />
+                  <h3 className="font-medium">{m.name}</h3>
+                </div>
+                <p className="mt-2 text-sm text-neutral-400">{m.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Infill */}
+      <div className="relative mx-auto w-[min(92vw,1100px)] py-10">
+        <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true }}>
+          <motion.h2 variants={item} className="text-xl font-semibold mb-3">
+            Infill Density
+          </motion.h2>
+          <motion.div variants={item} className="flex flex-wrap gap-2">
+            {infill.map((d) => (
+              <span
+                key={d}
+                className="rounded-lg border border-white/10 bg-black/40 px-3 py-1 text-sm text-neutral-300"
+              >
+                {d}
+              </span>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Quote */}
+      <div id="quote" className="relative mx-auto w-[min(92vw,1100px)] pb-20">
+        <div className="rounded-2xl border border-white/10 bg-black/40 p-6 md:p-8 text-center">
+          <h3
+            className="text-2xl md:text-3xl font-semibold"
+            style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
+          >
+            Ready to Print?
+          </h3>
+          <p className="mx-auto mt-2 max-w-2xl text-neutral-400">
+            Share your files, material, quality, color, and quantity. We'll confirm DFM and quote.
+          </p>
+          <div className="mt-5 flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="mailto:hello@chroma3d.in?subject=Chroma3D%20Quote%20Request"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-transparent px-4 py-2 text-white/90 hover:text-orange-500 hover:bg-white/10 transition"
+            >
+              <MessageSquare className="h-5 w-5" /> Email Us
+            </a>
+            <a
+              href="/Chroma3D_Printing_Guide.pdf"
+              className="inline-flex items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-orange-400 hover:text-white hover:border-white/30 transition"
+            >
+              <Download className="h-5 w-5" /> Design Guide (PDF)
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
-
-useGLTF.preload("/ganesha.glb");
