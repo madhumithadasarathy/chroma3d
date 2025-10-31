@@ -1,327 +1,488 @@
-// src/Components/Services/UploadPreview.jsx
-import React, { useCallback, useEffect, useMemo, useRef, useState, Suspense } from "react";
+import { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
 import {
   OrbitControls,
   Environment,
-  Bounds,
+  ContactShadows,
   Center,
-  Grid,
-  GizmoHelper,
-  GizmoViewport,
-  useGLTF,
+  Grid as DreiGrid,
 } from "@react-three/drei";
-import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
-import { MeshStandardMaterial } from "three";
-import { CloudUpload } from "lucide-react";
+import { OBJLoader } from "three-stdlib/loaders/OBJLoader";
+import { STLLoader } from "three-stdlib/loaders/STLLoader";
+import { GLTFLoader } from "three-stdlib/loaders/GLTFLoader";
+import { MeshStandardMaterial, Color } from "three";
+import { motion } from "framer-motion";
 
-// ---------- Styling helpers (match your global background) ----------
-const BG = () => (
-  <>
-    <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background:repeating-linear-gradient(90deg,transparent_0_20px,rgba(255,255,255,0.06)_21px,transparent_22px)]" />
-    <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55%_45%_at_50%_45%,rgba(5,5,6,0.95)_0%,rgba(10,10,11,1)_60%,#000_100%)]" />
-    <div className="pointer-events-none absolute -left-24 top-20 h-64 w-64 rounded-full bg-orange-500/10 blur-3xl -z-10" />
-    <div className="pointer-events-none absolute -right-24 bottom-16 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl -z-10" />
-  </>
+/**
+ * Chroma3D – Online 3D Printing Service (Preview Component)
+ *
+ * Design brief applied:
+ * - "Cinematic precision meets engineered light" aesthetics
+ * - Matte black base (#0a0a0b), Chroma Orange (#f97316) accents
+ * - Layered depth (radial + grid + glow)
+ * - 70/30 split: 3D viewer (70vw) full height; Controls (30vw)
+ * - Color swatches incl. metallics (Bronze, Gunmetal, Silver, Graphite)
+ * - Subtle motion via Framer Motion
+ * - Grid + axes vibe using Drei Grid and glow halos
+ *
+ * Notes:
+ * - Client-side only preview. Upload accepts .glb/.gltf/.stl/.obj and renders locally.
+ * - Materials & Pricing, FAQs, and feature tiles mimic the referenced page structure ethically
+ *   without copying proprietary copy.
+ */
+
+// ---------- Helpers ----------
+const BG = ({ children }) => (
+  <div className="min-h-screen w-full text-[#f1f1f1] bg-[#0a0a0b] relative overflow-hidden">
+    {/* Layered depth: radial vignette */}
+    <div className="pointer-events-none absolute inset-0 [background:radial-gradient(80%_60%_at_50%_20%,rgba(5,5,6,0.8),rgba(5,5,6,0.98))]" />
+    {/* Fine grid texture */}
+    <div className="pointer-events-none absolute inset-0 opacity-[0.06]"
+         style={{
+           backgroundImage:
+             "repeating-linear-gradient(90deg,transparent 0 20px,rgba(255,255,255,0.6) 21px,transparent 22px)," +
+             "repeating-linear-gradient(0deg,transparent 0 20px,rgba(255,255,255,0.6) 21px,transparent 22px)",
+         }}
+    />
+    {/* Orange glow blobs */}
+    <div className="pointer-events-none absolute -top-24 right-[-10%] h-[40rem] w-[40rem] bg-orange-500/10 blur-3xl rounded-full" />
+    <div className="pointer-events-none absolute -bottom-24 left-[-10%] h-[30rem] w-[30rem] bg-orange-500/10 blur-3xl rounded-full" />
+    {children}
+  </div>
 );
 
-// ---------- Color palette ----------
-const COLOR_SWATCHES = [
-  { name: "Matte Black", value: "#111111" },
-  { name: "Graphite", value: "#2f2f2f" },
-  { name: "Pearl White", value: "#e5e7eb" },
-  { name: "Signal Red", value: "#ef4444" },
-  { name: "Chroma Orange", value: "#f97316" },
-  { name: "Emerald", value: "#10b981" },
-  { name: "Sky", value: "#38bdf8" },
-  { name: "Royal Blue", value: "#3b82f6" },
-  { name: "Violet", value: "#8b5cf6" },
+const Section = ({ children, className = "" }) => (
+  <section className={`w-[min(92vw,1100px)] mx-auto ${className}`}>{children}</section>
+);
+
+const Badge = ({ children }) => (
+  <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1 text-xs tracking-wide backdrop-blur-md">
+    <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
+    {children}
+  </span>
+);
+
+// Metallic / solid palette aligned to brief
+const COLOR_PRESETS = [
+  { key: "bronze", name: "Bronze", hex: "#cd7f32", metalness: 1.0, roughness: 0.35 },
+  { key: "gunmetal", name: "Gunmetal", hex: "#2a2e35", metalness: 0.9, roughness: 0.5 },
+  { key: "silver", name: "Silver", hex: "#d7d7d7", metalness: 1.0, roughness: 0.2 },
+  { key: "graphite", name: "Graphite", hex: "#2f2f2f", metalness: 0.8, roughness: 0.6 },
+  { key: "orange", name: "Chroma Orange", hex: "#f97316", metalness: 0.6, roughness: 0.4 },
+  { key: "white", name: "Soft White", hex: "#f1f1f1", metalness: 0.2, roughness: 0.9 },
+  { key: "gray", name: "Neutral Gray", hex: "#9ca3af", metalness: 0.3, roughness: 0.8 },
 ];
 
-// ---------- Material factory ----------
-function makeMaterial(hex) {
-  return new MeshStandardMaterial({
-    color: hex,
-    metalness: 0.1,
-    roughness: 0.5,
+// ---------- 3D Loader ----------
+function GenericModel({ file, colorCfg }) {
+  const ext = useMemo(() => (file?.name || "").split(".").pop()?.toLowerCase(), [file]);
+  const url = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+
+  // Loaders per extension
+  const gltf = useLoader(GLTFLoader, url, (loader) => {
+    if (!(ext === "glb" || ext === "gltf")) return; // guard
   });
-}
+  const obj = useLoader(OBJLoader, url, (loader) => {
+    if (ext !== "obj") return;
+  });
+  const stl = useLoader(STLLoader, url, (loader) => {
+    if (ext !== "stl") return;
+  });
 
-// ---------- GLTF/GLB model ----------
-function GLTFModel({ url, color }) {
-  const { scene } = useGLTF(url);
-  const clone = useMemo(() => scene.clone(true), [scene]);
-  const material = useMemo(() => makeMaterial(color), [color]);
-
-  useEffect(() => {
-    clone.traverse((o) => {
-      if (o.isMesh) {
-        o.castShadow = true;
-        o.receiveShadow = true;
-        o.material = material;
-      }
+  // Unified scene graph
+  const content = useMemo(() => {
+    if (!file) return null;
+    const mat = new MeshStandardMaterial({
+      color: new Color(colorCfg.hex),
+      metalness: colorCfg.metalness,
+      roughness: colorCfg.roughness,
     });
-  }, [clone, material]);
 
-  return <primitive object={clone} />;
-}
-
-// ---------- STL model ----------
-function STLModel({ url, color }) {
-  const geometry = useLoader(STLLoader, url);
-  const material = useMemo(() => makeMaterial(color), [color]);
-
-  // Center the mesh roughly via Center wrapper outside
-  return <mesh geometry={geometry} material={material} castShadow receiveShadow />;
-}
-
-// ---------- OBJ model ----------
-function OBJModel({ url, color }) {
-  const group = useLoader(OBJLoader, url);
-  const material = useMemo(() => makeMaterial(color), [color]);
-
-  useEffect(() => {
-    group.traverse((o) => {
-      if (o.isMesh) {
-        o.castShadow = true;
-        o.receiveShadow = true;
-        o.material = material;
-      }
-    });
-  }, [group, material]);
-
-  return <primitive object={group} />;
-}
-
-// ---------- Router that picks the correct loader ----------
-function ModelRouter({ url, ext, color }) {
-  if (!url) return null;
-  if (ext === "glb" || ext === "gltf") return <GLTFModel url={url} color={color} />;
-  if (ext === "stl") return <STLModel url={url} color={color} />;
-  if (ext === "obj") return <OBJModel url={url} color={color} />;
-  return null;
-}
-
-// ---------- Main Upload + Preview ----------
-export default function UploadPreview() {
-  const [objectURL, setObjectURL] = useState(null);
-  const [ext, setExt] = useState(null);
-  const [fileName, setFileName] = useState("");
-  const [error, setError] = useState("");
-  const [color, setColor] = useState("#f97316"); // default: Chroma Orange
-
-  // clean up blob URL
-  useEffect(() => {
-    return () => {
-      if (objectURL) URL.revokeObjectURL(objectURL);
-    };
-  }, [objectURL]);
-
-  const onFiles = useCallback((file) => {
-    if (!file) return;
-    const e = file.name.split(".").pop()?.toLowerCase();
-    const allowed = ["glb", "gltf", "stl", "obj"];
-    if (!allowed.includes(e)) {
-      setError("Unsupported format. Please upload .glb/.gltf, .stl, or .obj");
-      return;
+    if (ext === "glb" || ext === "gltf") {
+      const scene = gltf?.scene?.clone();
+      scene?.traverse((o) => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          o.material = mat;
+        }
+      });
+      return scene ? <primitive object={scene} /> : null;
     }
-    setError("");
-    if (objectURL) URL.revokeObjectURL(objectURL);
-    const blobUrl = URL.createObjectURL(file);
-    setObjectURL(blobUrl);
-    setExt(e);
-    setFileName(file.name);
-  }, [objectURL]);
-
-  const onInputChange = (e) => {
-    const f = e.target.files?.[0];
-    if (f) onFiles(f);
-  };
-
-  // drag & drop
-  const dropRef = useRef(null);
-  useEffect(() => {
-    const el = dropRef.current;
-    if (!el) return;
-    const prevent = (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-    };
-    const onDrop = (ev) => {
-      prevent(ev);
-      const f = ev.dataTransfer?.files?.[0];
-      if (f) onFiles(f);
-    };
-    ["dragenter", "dragover", "dragleave", "drop"].forEach((name) =>
-      el.addEventListener(name, prevent)
-    );
-    el.addEventListener("drop", onDrop);
-    return () => {
-      ["dragenter", "dragover", "dragleave", "drop"].forEach((name) =>
-        el.removeEventListener(name, prevent)
+    if (ext === "obj") {
+      const group = obj?.clone();
+      group?.traverse((o) => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          o.material = mat;
+        }
+      });
+      return group ? <primitive object={group} /> : null;
+    }
+    if (ext === "stl") {
+      const geom = stl;
+      if (!geom) return null;
+      return (
+        <mesh castShadow receiveShadow geometry={geom}>
+          <meshStandardMaterial
+            attach="material"
+            color={colorCfg.hex}
+            metalness={colorCfg.metalness}
+            roughness={colorCfg.roughness}
+          />
+        </mesh>
       );
-      el.removeEventListener("drop", onDrop);
-    };
-  }, [onFiles]);
+    }
+    return null;
+  }, [file, gltf, obj, stl, ext, colorCfg]);
 
+  if (!file) return null;
   return (
-    <section className="relative py-12 text-white">
-      <BG />
-
-      {/* Header */}
-      <div className="relative mx-auto w-[min(92vw,1100px)] pb-6 text-center">
-        <div className="inline-flex items-center gap-3 text-[11px] tracking-[0.3em] text-orange-500/80">
-          <span className="h-[1px] w-8 bg-orange-500/60" />
-          UPLOAD & PREVIEW
-          <span className="h-[1px] w-8 bg-orange-500/60" />
-        </div>
-        <h2
-          className="mt-2 text-3xl md:text-4xl font-semibold"
-          style={{ fontFamily: "StardusterLasital, Poppins, sans-serif" }}
-        >
-          See Your Model in <span className="text-orange-500">Color</span>
-        </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-neutral-400">
-          Upload a 3D file (.glb/.gltf, .stl, .obj), inspect on an X-Y-Z grid, and preview finishes.
-        </p>
-      </div>
-
-      {/* Bento: Left panel (Uploader + Color) and Right panel (Canvas) */}
-      <div className="relative mx-auto grid w-[min(92vw,1100px)] gap-4 md:gap-6 sm:grid-cols-5">
-        {/* Left: Upload + Options */}
-        <div className="sm:col-span-2 space-y-4">
-          {/* Dropzone */}
-          <label
-            ref={dropRef}
-            className="
-              group relative block rounded-2xl border border-white/12 bg-black/40
-              backdrop-blur p-5 md:p-6 cursor-pointer overflow-hidden
-              ring-0 focus-within:ring-2 focus-within:ring-orange-500/50
-              "
-          >
-            <div className="flex items-start gap-3">
-              <div className="grid place-items-center h-11 w-11 rounded-xl bg-orange-500/15 ring-1 ring-orange-500/30">
-                <CloudUpload className="h-5 w-5 text-orange-400" />
-              </div>
-              <div className="text-left">
-                <div className="text-lg font-semibold">Upload 3D Model</div>
-                <div className="text-xs text-neutral-400 mt-0.5">
-                  Drag & drop or click to choose (.glb, .gltf, .stl, .obj)
-                </div>
-                {fileName ? (
-                  <div className="mt-2 text-[12px] text-neutral-300">
-                    Selected: <span className="text-white">{fileName}</span>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            <input
-              type="file"
-              accept=".glb,.gltf,.stl,.obj"
-              className="hidden"
-              onChange={onInputChange}
-            />
-            <span className="pointer-events-none absolute -inset-x-10 top-0 h-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-120%] group-hover:translate-x-[120%] transition-transform duration-700" />
-            <div className="pointer-events-none absolute inset-x-12 -bottom-5 h-10 rounded-full bg-orange-500/20 blur-2xl" />
-          </label>
-
-          {/* Error */}
-          {error ? (
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 text-red-300 px-3 py-2 text-sm">
-              {error}
-            </div>
-          ) : null}
-
-          {/* Color palette */}
-          <div className="rounded-2xl border border-white/12 bg-black/40 backdrop-blur p-4">
-            <div className="text-sm font-medium mb-3">Color Options</div>
-            <div className="grid grid-cols-5 gap-2">
-              {COLOR_SWATCHES.map((c) => (
-                <button
-                  key={c.value}
-                  title={c.name}
-                  onClick={() => setColor(c.value)}
-                  className={`
-                    h-9 rounded-lg border
-                    ${color === c.value ? "border-white/80" : "border-white/10"}
-                  `}
-                  style={{ background: c.value }}
-                />
-              ))}
-            </div>
-            <div className="mt-3 text-[11px] text-neutral-400">
-              Tip: This is a visual approximation of filament/finish.
-            </div>
-          </div>
-        </div>
-
-        {/* Right: 3D Canvas */}
-        <div className="sm:col-span-3 rounded-2xl border border-white/12 bg-black/40 backdrop-blur p-2">
-          {/* 9:16 viewport (good for Insta Story preview); scales on larger screens */}
-          <div className="relative mx-auto w-full max-w-[560px] aspect-[9/16]">
-            <Canvas
-              dpr={[1, 2]}
-              shadows
-              camera={{ fov: 35, position: [2.2, 1.6, 2.2] }}
-              gl={{ antialias: true, alpha: true }}
-            >
-              {/* Lights & environment */}
-              <Environment preset="studio" intensity={1} />
-              <directionalLight position={[3, 6, 4]} intensity={0.8} castShadow />
-              <ambientLight intensity={0.35} />
-
-              {/* Grid & axes */}
-              <Grid
-                args={[20, 20]}
-                cellColor="#333"
-                sectionColor="#444"
-                sectionThickness={1.2}
-                cellSize={0.5}
-                infiniteGrid
-                fadeDistance={18}
-                fadeStrength={2}
-              />
-              <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-                <GizmoViewport axisColors={["#ff6b6b", "#4ade80", "#60a5fa"]} labelColor="white" />
-              </GizmoHelper>
-
-              {/* Model */}
-              <Suspense fallback={null}>
-                {objectURL ? (
-                  <Center>
-                    <Bounds fit clip observe margin={1.2}>
-                      <ModelRouter url={objectURL} ext={ext} color={color} />
-                    </Bounds>
-                  </Center>
-                ) : null}
-              </Suspense>
-
-              {/* Controls */}
-              <OrbitControls
-                makeDefault
-                enablePan={false}
-                enableDamping
-                dampingFactor={0.08}
-                minDistance={0.5}
-                maxDistance={6}
-              />
-            </Canvas>
-
-            {/* Empty-state hint */}
-            {!objectURL ? (
-              <div className="absolute inset-0 grid place-items-center text-center">
-                <div className="text-neutral-400 text-sm px-6">
-                  Upload a model to preview it on the grid. Use the color swatches to try finishes.
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </div>
-    </section>
+    <Center>
+      {content}
+    </Center>
   );
 }
 
-// drei needs this for dynamic GLTFs
-useGLTF.preload("/dummy.glb");
+function Viewer({ file, colorCfg }) {
+  // Keep canvas tall and narrow: 70% of viewport width, full viewport height
+  return (
+    <div className="relative h-[100svh] w-full">
+      {/* Subtle halo behind model */}
+      <div className="pointer-events-none absolute left-1/2 top-[20%] -translate-x-1/2 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl" />
+
+      <Canvas shadows camera={{ position: [1.8, 1.2, 2.2], fov: 45 }} dpr={[1, 2]}>
+        <ambientLight intensity={0.6} />
+        {/* Warm key + cool fill */}
+        <directionalLight position={[2, 3, 2]} intensity={1.1} castShadow />
+        <directionalLight position={[-3, 1, -2]} intensity={0.4} />
+
+        <Suspense fallback={null}>
+          <GenericModel file={file} colorCfg={colorCfg} />
+          <Environment preset="city" />
+          <ContactShadows opacity={0.4} scale={8} blur={2.5} far={4} />
+        </Suspense>
+
+        <DreiGrid
+          args={[10, 10]}
+          sectionSize={1}
+          cellSize={0.2}
+          cellThickness={0.6}
+          sectionThickness={1}
+          followCamera={false}
+          fadeDistance={18}
+          fadeStrength={1}
+          position={[0, -0.001, 0]}
+          infiniteGrid
+        />
+
+        <OrbitControls enableDamping dampingFactor={0.08} />
+      </Canvas>
+
+      {/* Hint */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-white/70 tracking-wide select-none">
+        <div className="flex items-center gap-3">
+          <span>←</span>
+          <span className="uppercase">Hold & drag to orbit</span>
+          <span>→</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------- UI Blocks ----------
+function Hero() {
+  return (
+    <Section className="pt-14 pb-10">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="flex flex-col items-center text-center gap-6"
+      >
+        <Badge>Cinematic Engineering • Online 3D Printing</Badge>
+        <h1 className="text-3xl sm:text-5xl font-semibold tracking-[0.3em] sm:tracking-[0.5em] uppercase">
+          Online 3D Printing Service
+        </h1>
+        <p className="max-w-2xl text-sm sm:text-base text-[#9ca3af]">
+          Upload your model, choose material/finish, and get cinematic‑grade parts—fast. Engineered light, molten precision, industrial elegance.
+        </p>
+        <div className="flex gap-3 flex-wrap justify-center">
+          <a href="#quote" className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-medium hover:bg-white hover:text-black transition">
+            Get Instant Quote
+          </a>
+          <a href="#upload" className="rounded-xl border border-white/10 bg-black/40 px-5 py-2.5 text-sm hover:border-white/30 transition">
+            Upload Model
+          </a>
+        </div>
+      </motion.div>
+    </Section>
+  );
+}
+
+function FeatureTiles() {
+  const items = [
+    { t: "Rapid Lead Times", d: "24–72h dispatch for standard parts." },
+    { t: "Materials", d: "PLA, ABS, PETG, TPU, Nylon (PA12), CF blends." },
+    { t: "Quality", d: "0.12–0.28 mm layers, QA with dimensional checks." },
+    { t: "Batch & Proto", d: "One‑offs to short‑run production." },
+  ];
+  return (
+    <Section className="pb-10">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {items.map((it, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, delay: i * 0.05 }}
+            className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-5 hover:-translate-y-1 transition will-change-transform shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+          >
+            <div className="text-lg mb-1">{it.t}</div>
+            <div className="text-sm text-[#9ca3af]">{it.d}</div>
+          </motion.div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function PricingMaterials() {
+  return (
+    <Section id="quote" className="pb-14">
+      <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="lg:w-1/2">
+            <h3 className="text-xl font-medium mb-2 tracking-widest uppercase">Materials & Finishes</h3>
+            <ul className="text-sm text-[#c9c9c9] list-disc pl-5 space-y-1">
+              <li>PLA / PLA+ – cost‑effective, prototypes, visual models</li>
+              <li>PETG – strength + temperature resistance, enclosures</li>
+              <li>ABS – functional parts, post‑processing friendly</li>
+              <li>TPU (95A) – flexible, wearables, gaskets</li>
+              <li>Nylon (PA12) / CF – robust, end‑use components</li>
+            </ul>
+            <p className="text-xs text-[#9ca3af] mt-3">Request metallic spray, sanding, vapor smoothing, or primer‑ready finish as add‑ons.</p>
+          </div>
+          <div className="lg:w-1/2">
+            <h3 className="text-xl font-medium mb-2 tracking-widest uppercase">Indicative Pricing</h3>
+            <div className="text-sm text-[#c9c9c9] grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-white/10 p-3">
+                <div className="text-white">Standard (PLA/PETG)</div>
+                <div className="text-[#9ca3af]">₹12–₹18/gram · 0.2 mm</div>
+              </div>
+              <div className="rounded-xl border border-white/10 p-3">
+                <div className="text-white">ABS / Nylon</div>
+                <div className="text-[#9ca3af]">₹20–₹35/gram · 0.2 mm</div>
+              </div>
+              <div className="rounded-xl border border-white/10 p-3">
+                <div className="text-white">CF Blends</div>
+                <div className="text-[#9ca3af]">₹35–₹60/gram</div>
+              </div>
+              <div className="rounded-xl border border-white/10 p-3">
+                <div className="text-white">Finishes</div>
+                <div className="text-[#9ca3af]">Sanding/Primer/Vapor: +₹199–₹1499</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-[#9ca3af] mt-3">* Final quote depends on volume, supports, infill, and lead time.</p>
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function FAQ() {
+  const items = [
+    {
+      q: "Which files are supported?",
+      a: ".glb, .gltf, .stl, and .obj are supported for instant preview. For STEP/IGES, export to one of the supported formats.",
+    },
+    {
+      q: "How is cost calculated?",
+      a: "We estimate by material weight, print time, supports, and finishing. The final quote is confirmed after a quick DFM check.",
+    },
+    {
+      q: "What layer heights do you offer?",
+      a: "0.12 mm (fine), 0.2 mm (standard), 0.28 mm (draft) for FDM. Custom profiles are available on request.",
+    },
+    {
+      q: "Do you ship?",
+      a: "Yes, pan‑India shipping with protective packaging. Same‑day pickup available in Chennai for urgent jobs.",
+    },
+  ];
+  return (
+    <Section className="pb-24">
+      <h3 className="text-xl font-medium mb-4 tracking-widest uppercase">FAQs</h3>
+      <div className="divide-y divide-white/10 rounded-2xl border border-white/10 overflow-hidden">
+        {items.map((it, i) => (
+          <details key={i} className="group bg-black/30">
+            <summary className="cursor-pointer list-none p-4 hover:bg-white/5 flex items-center justify-between">
+              <span className="text-sm">{it.q}</span>
+              <span className="text-orange-400 group-open:rotate-45 transition">+</span>
+            </summary>
+            <div className="p-4 pt-0 text-sm text-[#9ca3af]">{it.a}</div>
+          </details>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+// ---------- Upload + Preview (70/30 split) ----------
+function UploadPreview() {
+  const [file, setFile] = useState(null);
+  const [drag, setDrag] = useState(false);
+  const [colorKey, setColorKey] = useState("bronze");
+  const colorCfg = useMemo(() => COLOR_PRESETS.find((c) => c.key === colorKey)!, [colorKey]);
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0];
+    if (!f) return;
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (["glb", "gltf", "stl", "obj"].includes(ext)) setFile(f);
+  };
+  const onPick = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (["glb", "gltf", "stl", "obj"].includes(ext)) setFile(f);
+  };
+
+  return (
+    <div id="upload" className="w-full">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-[70vw_minmax(0,1fr)]">
+        {/* 3D VIEWER (70vw x 100vh) */}
+        <div className="col-span-1 lg:col-auto">
+          <Viewer file={file} colorCfg={colorCfg} />
+        </div>
+
+        {/* CONTROL PANEL (fills remaining width) */}
+        <div className="h-[100svh] overflow-y-auto border-l border-white/10 bg-black/40 backdrop-blur-md p-5">
+          <div className="sticky top-0 z-10 -mx-5 mb-4 border-b border-white/10 bg-black/60 px-5 py-3 backdrop-blur-md">
+            <div className="text-sm tracking-widest uppercase">Upload & Style</div>
+            <div className="text-xs text-[#9ca3af]">Supported: .glb, .gltf, .stl, .obj</div>
+          </div>
+
+          {/* Dropzone */}
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+            onDragLeave={() => setDrag(false)}
+            onDrop={onDrop}
+            className={`rounded-2xl border ${drag ? "border-orange-400 bg-orange-500/5" : "border-white/10 bg-black/30"} p-4 text-center mb-5`}
+          >
+            <div className="text-sm mb-2">Drag & drop your 3D file here</div>
+            <div className="text-xs text-[#9ca3af] mb-3">or</div>
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-xs hover:border-white/30">
+              <input type="file" accept=".glb,.gltf,.stl,.obj" onChange={onPick} className="hidden" />
+              <span>Browse Files</span>
+            </label>
+            {file && (
+              <div className="mt-3 text-xs text-[#9ca3af]">Selected: <span className="text-white">{file.name}</span></div>
+            )}
+          </div>
+
+          {/* Color swatches */}
+          <div className="mb-6">
+            <div className="mb-2 text-sm tracking-widest uppercase">Color & Finish</div>
+            <div className="grid grid-cols-4 gap-3">
+              {COLOR_PRESETS.map((c) => (
+                <button
+                  key={c.key}
+                  onClick={() => setColorKey(c.key)}
+                  className={`group flex flex-col items-center gap-1 rounded-xl border p-2 transition ${
+                    colorKey === c.key ? "border-orange-400 shadow-[0_0_20px_rgba(249,115,22,0.25)]" : "border-white/10"
+                  }`}
+                >
+                  <span
+                    className="h-10 w-10 rounded-lg"
+                    style={{ background: c.hex }}
+                  />
+                  <span className="text-[10px] text-[#9ca3af]">{c.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Simple quote inputs (non-functional placeholders) */}
+          <div className="mb-6">
+            <div className="mb-2 text-sm tracking-widest uppercase">Quick Quote (Preview)</div>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <select className="rounded-lg border border-white/10 bg-black/40 p-2">
+                <option>Material: PLA</option>
+                <option>PETG</option>
+                <option>ABS</option>
+                <option>TPU (95A)</option>
+                <option>Nylon (PA12)</option>
+                <option>CF‑Nylon</option>
+              </select>
+              <select className="rounded-lg border border-white/10 bg-black/40 p-2">
+                <option>Layer: 0.2 mm</option>
+                <option>0.12 mm</option>
+                <option>0.28 mm</option>
+              </select>
+              <select className="rounded-lg border border-white/10 bg-black/40 p-2">
+                <option>Infill: 15%</option>
+                <option>0%</option>
+                <option>5%</option>
+                <option>25%</option>
+                <option>50%</option>
+              </select>
+              <select className="rounded-lg border border-white/10 bg-black/40 p-2">
+                <option>Finish: None</option>
+                <option>Sanding</option>
+                <option>Primer‑Ready</option>
+                <option>Vapor (ABS)</option>
+              </select>
+            </div>
+            <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-black/30 p-3">
+              <div>
+                <div className="text-xs text-[#9ca3af]">Est. Price (illustrative)</div>
+                <div className="text-lg">₹ 1,250 – 1,850</div>
+              </div>
+              <button className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-medium hover:bg-white hover:text-black transition">Request Final Quote</button>
+            </div>
+          </div>
+
+          {/* Perks */}
+          <div className="grid gap-3 text-xs">
+            {["Design‑for‑Manufacture check","Support removal & cleanup","Dimensional QA report (on request)","Secure packaging & tracked shipping"].map((t,i)=>(
+              <div key={i} className="rounded-lg border border-white/10 bg-black/30 p-3 flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                <span className="text-[#c9c9c9]">{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CTA() {
+  return (
+    <Section className="pb-16">
+      <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-6 text-center">
+        <h4 className="text-lg mb-2 tracking-widest uppercase">Ready to print?</h4>
+        <p className="text-sm text-[#9ca3af] mb-4">Upload your 3D model and get a precise quote with lead times today.</p>
+        <a href="#upload" className="inline-block rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-medium hover:bg-white hover:text-black transition">Start Now</a>
+      </div>
+    </Section>
+  );
+}
+
+export default function Online3DPrintingService() {
+  return (
+    <BG>
+      <Hero />
+      <FeatureTiles />
+      <UploadPreview />
+      <PricingMaterials />
+      <FAQ />
+      <CTA />
+    </BG>
+  );
+}
