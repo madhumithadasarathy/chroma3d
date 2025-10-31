@@ -60,8 +60,9 @@ export default function Hero() {
             <span className="text-gray-100">Chroma</span>3D
           </p>
 
+          {/* Added top margin for smaller screens */}
           <h1
-            className="text-3xl sm:text-5xl leading-snug sm:leading-tight"
+            className="mt-6 lg:mt-0 text-3xl sm:text-5xl leading-snug sm:leading-tight"
             style={{ fontFamily: "'StardusterLasital', system-ui, sans-serif" }}
           >
             where&nbsp;<span className="text-orange-500">ideas</span>
