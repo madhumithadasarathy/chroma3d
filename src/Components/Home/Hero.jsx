@@ -55,7 +55,8 @@ export default function Hero() {
         style={{ fontFamily: "Poppins, system-ui, sans-serif" }}
       >
         <div className="flex flex-col justify-center h-full lg:h-auto">
-          <p className="uppercase tracking-[8px] text-xs sm:text-sm text-orange-500/80 mb-1 sm:mb-2">
+          {/* Hidden on small screens */}
+          <p className="hidden lg:block uppercase tracking-[8px] text-xs sm:text-sm text-orange-500/80 mb-1 sm:mb-2">
             <span className="text-gray-100">Chroma</span>3D
           </p>
 
